@@ -9,7 +9,7 @@ public class Circle extends CenteredShape{
     public Circle(Object... attributes) {
         setType("circle");
         update(attributes);
-        ShapeManager.getInstance().addShape(this);
+        ShapeFactory.getInstance().addShape(this);
     }
     public float getRadius() {
         return radius;

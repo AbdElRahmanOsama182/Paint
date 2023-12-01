@@ -8,7 +8,7 @@ public class Ellipse extends CenteredShape{
     public Ellipse(Object... attributes) {
         setType("ellipse");
         update(attributes);
-        ShapeManager.getInstance().addShape(this);
+        ShapeFactory.getInstance().addShape(this);
     }
     public float getMainRadius() {
         return mainRadius;

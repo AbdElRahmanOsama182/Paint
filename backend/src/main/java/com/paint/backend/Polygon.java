@@ -10,13 +10,13 @@ public class Polygon extends Shape {
     public Polygon(Object... attributes) {
         setType("polygon");
         update(attributes);
-        ShapeManager.getInstance().addShape(this);
+        ShapeFactory.getInstance().addShape(this);
     }
 
     public Polygon(String type, Object... attributes) {
         setType(type);
         update(attributes);
-        ShapeManager.getInstance().addShape(this);
+        ShapeFactory.getInstance().addShape(this);
     }
     public int getSidesNumber() {
         return sidesNumber;

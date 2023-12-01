@@ -7,7 +7,7 @@ public class Square extends CenteredShape{
     public Square(Object... attributes) {
         setType("square");
         update(attributes);
-        ShapeManager.getInstance().addShape(this);
+        ShapeFactory.getInstance().addShape(this);
     }
     public float getSide() {
         return side;
