@@ -27,7 +27,6 @@ public class Ellipse extends CenteredShape{
 
     @Override
     public IShape clone() {
-        super.clone();
         Ellipse clone = new Ellipse();
         clone.setCenter(getCenter());
         clone.setMainRadius(getMainRadius());
@@ -37,7 +36,6 @@ public class Ellipse extends CenteredShape{
 
     @Override
     public void update(Object... attributes) {
-        super.update(attributes);
         if(attributes.length % 2 != 0){
             throw new IllegalArgumentException("Attributes must be in pairs");
         }

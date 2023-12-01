@@ -20,7 +20,6 @@ public class Circle extends CenteredShape{
 
     @Override
     public IShape clone() {
-        super.clone();
         Circle clone = new Circle();
         clone.setCenter(getCenter());
         clone.setRadius(getRadius());
@@ -29,7 +28,6 @@ public class Circle extends CenteredShape{
 
     @Override
     public void update(Object... attributes) {
-        super.update(attributes);
         if(attributes.length % 2 != 0){
             throw new IllegalArgumentException("Attributes must be in pairs");
         }

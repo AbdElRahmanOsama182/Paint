@@ -3,14 +3,10 @@ import java.util.Map;
 public class Rectangle extends CenteredShape {
     private float width;
     private float height;
-
-    public Rectangle() {
-        setType("rectangle");
-    }
-
     public Rectangle(Object... attributes) {
-        this();
+        setType("rectangle");
         update(attributes);
+        ShapeFactory.getInstance().addShape(this);
     }
     public float getWidth() {
         return width;

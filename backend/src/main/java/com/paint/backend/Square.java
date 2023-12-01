@@ -19,7 +19,6 @@ public class Square extends CenteredShape{
 
     @Override
     public IShape clone() {
-        super.clone();
         Square clone = new Square();
         clone.setCenter(getCenter());
         clone.setSide(getSide());
@@ -28,7 +27,6 @@ public class Square extends CenteredShape{
 
     @Override
     public void update(Object... attributes) {
-        super.update(attributes);
         if(attributes.length % 2 != 0){
             throw new IllegalArgumentException("Attributes must be in pairs");
         }

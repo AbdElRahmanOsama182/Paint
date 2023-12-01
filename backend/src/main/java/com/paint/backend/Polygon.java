@@ -36,7 +36,14 @@ public class Polygon extends Shape {
 
     @Override
     public IShape clone() {
-        Polygon clone = new Polygon();
+        Polygon clone;
+        if (getType().equalsIgnoreCase("line")) {
+            clone = new Polygon("line");
+        } else if (getType().equalsIgnoreCase("triangle")) {
+            clone = new Polygon("triangle");
+        } else {
+            clone = new Polygon();
+        }
         clone.setSidesNumber(getSidesNumber());
         clone.setPoints(getPoints());
         return clone;
@@ -44,7 +51,6 @@ public class Polygon extends Shape {
 
     @Override
     public void update(Object... attributes) {
-        super.update(attributes);
         if (attributes.length % 2 != 0) {
             throw new IllegalArgumentException("Attributes must be in pairs");
         }
