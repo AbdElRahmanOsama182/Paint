@@ -2,57 +2,14 @@ package com.paint.backend;
 
 import java.util.Map;
 
-public abstract class Shape implements IShape{
-    private int id;
-    private String type;
+public interface Shape extends Cloneable {
+    int getId();
 
-    @Override
-    public int getId() {
-        return id;
-    }
+    void setId(int id);
 
-    @Override
-    public void setId(int id) {
-        this.id = id;
-    }
+    void update(Object... attributes);
 
-    @Override
-    public abstract IShape clone();
+    Map<String, Object> read();
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    @Override
-    public void update(Object... attributes) {
-        if(attributes.length % 2 != 0){
-            throw new IllegalArgumentException("Attributes must be in pairs");
-        }
-        for(int i = 0; i < attributes.length; i += 2){
-            String key = (String) attributes[i];
-            Object value = attributes[i + 1];
-            switch(key){
-                case "id":
-                    setId((int) value);
-                    break;
-                case "type":
-                    setType((String) value);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid attribute: " + key);
-            }
-        }
-    }
-
-    @Override
-    public Map<String, Object> read() {
-        return Map.of(
-            "id", getId(),
-            "type", getType()
-        );
-    }
+    Shape clone();
 }
