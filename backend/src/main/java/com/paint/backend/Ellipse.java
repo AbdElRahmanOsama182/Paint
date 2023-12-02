@@ -1,71 +1,56 @@
 package com.paint.backend;
 
+import java.awt.Point;
 import java.util.Map;
 
-public class Ellipse extends CenteredShape{
-    private float mainRadius;
-    private float secondaryRadius;
+public class Ellipse extends EllipticalShape {
+    private int mainRadius;
+    private int secondaryRadius;
+
     public Ellipse(Object... attributes) {
-        setType("ellipse");
         update(attributes);
-        ShapeFactory.getInstance().addShape(this);
+
     }
-    public float getMainRadius() {
+
+    public int getMainRadius() {
         return mainRadius;
     }
 
-    public void setMainRadius(float mainRadius) {
+    public void setMainRadius(int mainRadius) {
         this.mainRadius = mainRadius;
     }
 
-    public void setSecondaryRadius(float secondaryRadius) {
+    public void setSecondaryRadius(int secondaryRadius) {
         this.secondaryRadius = secondaryRadius;
     }
-    public float getSecondaryRadius() {
+
+    public int getSecondaryRadius() {
         return secondaryRadius;
     }
 
     @Override
-    public IShape clone() {
-        Ellipse clone = new Ellipse();
-        clone.setCenter(getCenter());
-        clone.setMainRadius(getMainRadius());
-        clone.setSecondaryRadius(getSecondaryRadius());
+    public Shape clone() {
+        Ellipse clone = new Ellipse(getCenter(), getMainRadius(), getSecondaryRadius());
         return clone;
     }
 
     @Override
     public void update(Object... attributes) {
-        if(attributes.length % 2 != 0){
-            throw new IllegalArgumentException("Attributes must be in pairs");
-        }
-        for(int i = 0; i < attributes.length; i += 2){
-            String key = (String) attributes[i];
-            Object value = attributes[i + 1];
-            switch(key){
-                case "center":
-                    setCenter((java.awt.geom.Point2D.Float) value);
-                    break;
-                case "mainRadius":
-                    setMainRadius((float) value);
-                    break;
-                case "secondaryRadius":
-                    setSecondaryRadius((float) value);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid attribute: " + key);
-            }
-        }
+        update((Point) attributes[0], (int) attributes[1], (int) attributes[2]);
+    }
+
+    public void update(Point center, int mainRadius, int secondaryRadius) {
+        setCenter(center);
+        setMainRadius(mainRadius);
+        setSecondaryRadius(secondaryRadius);
     }
 
     @Override
     public Map<String, Object> read() {
         return Map.of(
-            "id", getId(),
-            "type", getType(),
-            "center", getCenter(),
-            "mainRadius", getMainRadius(),
-            "secondaryRadius", getSecondaryRadius()
-        );
+                "id", getId(),
+                "center", getCenter(),
+                "mainRadius", getMainRadius(),
+                "secondaryRadius", getSecondaryRadius());
     }
 }
