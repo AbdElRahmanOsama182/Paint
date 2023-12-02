@@ -8,8 +8,8 @@
         @mouseleave="stopDrag">
             <div class="commands">
                 <button> load </button>
-                <button> save</button>
                 <button> undo </button>
+                <button> save</button>
                 <button> redo </button>
             </div>
             <div class="shapes">
@@ -19,36 +19,34 @@
                 <button> / </button>
             </div>
             <div class="colors">
-                <button> r </button>
-                <button> b </button>
-                <button> y </button>
-                <button> g </button>
-                <button> o </button>
-                <button> c </button>
-                <button> m </button>
-                <button> k </button>
-                <button class="customcolor"> custom color </button>
+                <button> </button>
+                <button> </button>
+                <button> </button>
+                <button> </button>
+                <button> </button>
+                <button> </button>
+                <button> </button>
+                <button> </button>
             </div>
+            <button class="customcolor"> custom color </button>
         </div>
 
     <div class="wrapper">
-        <div class="canvas" :style="{ width: `${CW}px`, height: `${CH}px` }"> </div>
+        <div class="canvas" :style="{ width: `${CW}px`, height: `${CH}px`}"></div>
     </div>
 
     </div>
 </template>
 
 <script>
-
-
 export default {
     data(){
         return{
             CW: 1200,
             CH: 600,
             isDragging: false,
-            x: 0,
-            y: 0,
+            x: 450,
+            y: 550,
             startX: 0,
             startY: 0,
         };
@@ -77,27 +75,44 @@ export default {
         position: absolute;
         height: 100vh;
         width: 100vw;
-        background: #ffa31a;
+        background: lightblue;
         display: flex;
         justify-content: center;
         align-items: center;
+        top: 0px;left: 0px;bottom: 0px;right: 0px;
     }
     .canvas{
         background-color: white;
-        border: 3px solid #1b1b1b;
         border-radius: 10px;
+        border: 0px solid;
+        box-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.1);
     }
     .panel{
         position: absolute;
         display: flex;
         z-index: 5;
         padding: 15px;
-        background: #808080;
+        padding-right: 50px;
+        background: #80808041;
         gap: 20px;
         border-radius: 5px;
         cursor: move;
+        backdrop-filter: blur(5px);
     }
 
+    button{
+        cursor: pointer;
+        border: 0px;
+        background: white;
+        border-radius: 5px;
+        transition: all 100ms ease-out;
+    }
+    button:hover{
+        opacity: 70%;
+    }
+    button:active{
+        scale: 110%;
+    }
     .shapes {
         display: grid;
         grid-template-rows: repeat(2, 1fr);
@@ -111,6 +126,8 @@ export default {
         gap: 5px;
         grid-auto-flow: column;
     }
+
+
     .commands {
         display: grid;
         grid-template-rows: repeat(2, 1fr);
@@ -122,10 +139,26 @@ export default {
         width: 50px;
         height: 30px;
     }
-    .customcolor{
-        grid-column: span 2;
-        grid-row: span 2;
-        width: auto;
-        height: auto;
-    }
+
+.colors button {
+    width: 30px;
+    border-radius: 50px;
+    border: 0;
+    box-shadow: inset 2px 2px 0px rgba(0, 0, 0, 0.2);
+}
+.colors button:nth-child(1) {background-color: black;}
+.colors button:nth-child(2) {background-color: white;}
+.colors button:nth-child(3) {background-color: cyan;}
+.colors button:nth-child(4) {background-color: blue;}
+.colors button:nth-child(5) {background-color: yellow;}
+.colors button:nth-child(6) {background-color: green;}
+.colors button:nth-child(7) {background-color: magenta;}
+.colors button:nth-child(8) {background-color: red;}
+.customcolor{
+    grid-column: span 2;
+    grid-row: span 2;
+    width: 60px;
+    height: auto;
+}
+
 </style>
