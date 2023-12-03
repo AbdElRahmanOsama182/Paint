@@ -9,6 +9,7 @@ public interface Shape extends Cloneable {
 
     void update(Map<String,Object> attributes);
 
+
     Map<String, Object> read();
 
     Shape clone();

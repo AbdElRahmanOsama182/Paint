@@ -12,6 +12,7 @@ public class PolygonShape implements Shape {
 
     }
     public PolygonShape(Map<String,Object> attributes) {
+
         update(attributes);
     }
 
@@ -34,12 +35,14 @@ public class PolygonShape implements Shape {
     @Override
     public Shape clone() {
         PolygonShape clone = new PolygonShape(Map.of("points", getPoints()));
+
         return clone;
     }
 
     @Override
     public void update(Map<String,Object> attributes) {
         update((ArrayList<Point>) attributes.get("points"));
+
     }
 
     public void update(ArrayList<Point> points) {
@@ -61,4 +64,5 @@ public class PolygonShape implements Shape {
     //         System.out.println(ShapeFactory.getInstance().read(s.getId()));
     //     }
     // }
+
 }

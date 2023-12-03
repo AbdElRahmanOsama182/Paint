@@ -16,6 +16,7 @@ public class Rectangle extends PolygonShape {
     @Override
     public void update(Map<String,Object> attributes) {
         update((ArrayList<Point>) attributes.get("points"));
+
     }
 
     public void update(ArrayList<Point> points) {
@@ -25,6 +26,7 @@ public class Rectangle extends PolygonShape {
     @Override
     public Shape clone() {
         Rectangle clone = new Rectangle(Map.of("points", getPoints()));
+
         return clone;
     }
 

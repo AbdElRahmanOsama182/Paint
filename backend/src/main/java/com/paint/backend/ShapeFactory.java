@@ -27,11 +27,13 @@ public class ShapeFactory {
     }
 
     public static Shape update(int id, Map<String,Object> attributes) {
+
         Shape shape = shapes.get(id);
         if (shape != null) {
             shape.update(attributes);
         }
         return shape;
+
     }
 
     public static void delete(int id) {
@@ -65,6 +67,7 @@ public class ShapeFactory {
     }
 
     public static Shape create(String shapeType, Map<String,Object> attributes) {
+
         if (shapeType == null) {
             return null;
         }
