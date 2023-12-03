@@ -31,7 +31,7 @@ public class EllipticalShape implements Shape {
     }
 
     @Override
-    public void update(Object... attributes) {
+    public void update(Map<String,Object> attributes) {
         return;
     }
 

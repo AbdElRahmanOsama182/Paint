@@ -6,13 +6,16 @@ import java.util.ArrayList;
 
 public class Line extends PolygonShape {
 
-    public Line(Object... attributes) {
-        update(attributes);
+    public Line() {
+    }
+
+    public Line(Map<String,Object> attributes) {
+        super(attributes);
     }
 
     @Override
-    public void update(Object... attributes) {
-        update((ArrayList<Point>) attributes[0]);
+    public void update(Map<String,Object> attributes) {
+        update((ArrayList<Point>) attributes.get("points"));
     }
 
     public void update(ArrayList<Point> points) {
@@ -21,7 +24,7 @@ public class Line extends PolygonShape {
 
     @Override
     public Shape clone() {
-        Line clone = new Line(getPoints());
+        Line clone = new Line(Map.of("points", getPoints()));
         return clone;
     }
 
