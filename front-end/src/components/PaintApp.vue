@@ -30,8 +30,20 @@
                 <button> </button>
                 <button> </button>
             </div>
-            <button class="customcolor"> custom color </button>
-        </div>
+            <div class="popup">
+                    <button class="customcolor" @dblclick="showPicker" :style="{backgroundColor: currentColor}">
+                        <p v-if="isPopupVisible">▿</p>
+                        <p v-else>▵</p>
+                    </button>
+                    <div id="PopUp" class="popup-content">
+                        <v-color-picker 
+                            @update:modelValue="changeColor"
+                            @mouseleave="closePopup" 
+                            color="#e0dfdf"
+                            >
+                        </v-color-picker>
+                    </div>
+                    </div>         </div>
 
     <div class="wrapper">
         <div @dblclick="selectShape" @mousedown="Action" @mouseup="stopDrawing" class="canvas" :style="{ width: `${CW}px`, height: `${CH}px`}">
@@ -62,6 +74,8 @@ export default {
             slectedShapeIndex: null,
             transformer: null,
             selectionRectangle: null,
+            isPopupVisible: false,
+            currentColor: 0
         };
     },
     mounted(){
@@ -264,7 +278,7 @@ export default {
             this.startY = event.clientY - this.y;
         },
         dragging(event) {
-            if (this.isDragging) {
+            if (this.isDragging && !this.isPopupVisible) {
                 this.x = event.clientX - this.startX;
                 this.y = event.clientY - this.startY;
         }
@@ -272,6 +286,18 @@ export default {
         stopDrag() {
             this.isDragging = false;
         },
+        showPicker(){
+            document.getElementById("PopUp").classList.toggle("showColorPicker");
+            this.isPopupVisible = !this.isPopupVisible;
+        },
+        changeColor(event){
+            this.currentColor = event;
+        },
+        closePopup(){
+            if(this.isPopupVisible){
+                this.showPicker();
+            }
+        }
     },
 }
 </script>
@@ -360,11 +386,32 @@ export default {
 .colors button:nth-child(6) {background-color: green;}
 .colors button:nth-child(7) {background-color: magenta;}
 .colors button:nth-child(8) {background-color: red;}
-.customcolor{
+.popup{
     grid-column: span 2;
     grid-row: span 2;
     width: 60px;
     height: auto;
+    position: relative;
+}
+
+.customcolor{
+    width: 100%;
+    height: 100%;
+}
+.popup-content {
+  display: none;
+  position: absolute;
+  bottom: 50px;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  cursor: pointer;
+
+}
+
+.showColorPicker {
+  display: block;
+  margin-bottom: 20px;
 }
 
 </style>
