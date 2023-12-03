@@ -84,7 +84,52 @@ export default {
     methods: {
         Action(){
             if(this.isDrawing) this.startDrawing();
-
+            else this.selectWindow();
+        },
+        selectWindow(){
+            this.stage.off('mousemove');
+            this.stage.off('mouseup');
+            const pos = this.stage.getPointerPosition();
+            const shape = this.stage.getIntersection(pos);
+            if (shape) return;
+            this.transformer.nodes([]);
+            var x1, y1, x2, y2;
+            x1 = this.stage.getPointerPosition().x;
+            y1 = this.stage.getPointerPosition().y;
+            x2 = this.stage.getPointerPosition().x;
+            y2 = this.stage.getPointerPosition().y;
+            this.selectionRectangle.visible(true);
+            console.log(this.selectionRectangle.visible());
+            this.selectionRectangle.width(0);
+            this.selectionRectangle.height(0);
+            this.stage.on('mousemove', (e) => {
+                if (!this.selectionRectangle.visible()) return;
+                e.evt.preventDefault();
+                x2 = this.stage.getPointerPosition().x;
+                y2 = this.stage.getPointerPosition().y;
+                this.selectionRectangle.setAttrs({
+                    x: Math.min(x1, x2),
+                    y: Math.min(y1, y2),
+                    width: Math.abs(x2 - x1),
+                    height: Math.abs(y2 - y1),
+                });
+            });
+            this.stage.on('mouseup', (e) => {
+                if (!this.selectionRectangle.visible()) return;
+                e.evt.preventDefault();
+                setTimeout(() => {
+                    this.selectionRectangle.visible(false);
+                });
+                var shapes = this.stage.find('Shape');
+                var box = this.selectionRectangle.getClientRect();
+                
+                var selected = shapes.filter((shape) =>
+                    shape !== this.selectionRectangle &&
+                  Konva.Util.haveIntersection(box, shape.getClientRect())
+                );
+                console.log(selected);
+                if (selected.length > 0) this.transformer.nodes(selected);
+            });
         },
         drawShape(shape){
             this.drawingShape = shape;
@@ -153,6 +198,7 @@ export default {
         },
         startDrawing(event){
             console.log("start drawing");
+            this.transformer.nodes([]);
             this.isDrawing = true;
             const shape = this.createShape(this.stage.getPointerPosition());
             this.layer.add(shape);
