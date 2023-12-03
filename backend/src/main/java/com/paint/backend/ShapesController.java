@@ -16,14 +16,30 @@ public class ShapesController {
     
     @PostMapping("/circle")
     public Circle createCircle(@RequestBody Circle data) {
-        // print data key and values
-        System.out.println("Circleeeee");
-        for (Map.Entry<String, Object> entry : data.read().entrySet()) {
-            System.out.println(entry.getKey() + ":" + entry.getValue().toString());
-        }
-        System.out.println("Circleeeee");
         return (Circle) ShapeFactory.getInstance().create("circle",data.read());
     }
+    @PostMapping("/rectangle")
+    public Rectangle createRectangle(@RequestBody Rectangle data) {
+        return (Rectangle) ShapeFactory.getInstance().create("rectangle",data.read());
+    }
+    
+    @PostMapping("/triangle")
+    public Triangle createTriangle(@RequestBody Triangle data) {
+        return (Triangle) ShapeFactory.getInstance().create("triangle",data.read());
+    }
+    @PostMapping("/square")
+    public Square createSquare(@RequestBody Square data) {
+        return (Square) ShapeFactory.getInstance().create("square",data.read());
+    }
+    @PostMapping("/line")
+    public Line createLine(@RequestBody Line data) {
+        return (Line) ShapeFactory.getInstance().create("line",data.read());
+    }
+    @PostMapping("/ellipse")
+    public Ellipse createEllipse(@RequestBody Ellipse data) {
+        return (Ellipse) ShapeFactory.getInstance().create("ellipse",data.read());
+    }
+
     
 
     @GetMapping("/shape/{id}")
