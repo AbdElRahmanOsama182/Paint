@@ -8,6 +8,9 @@ public class PolygonShape implements Shape {
     int id;
     ArrayList<Point> points;
 
+    public PolygonShape() {
+
+    }
     public PolygonShape(Map<String,Object> attributes) {
         update(attributes);
     }
