@@ -14,20 +14,26 @@ public class Circle extends EllipticalShape {
         this.radius = radius;
     }
 
-    public Circle(Object... attributes) {
+    public Circle() {
+
+    }
+    public Circle(Map<String,Object> attributes) {
+
         update(attributes);
 
     }
 
     @Override
     public Shape clone() {
-        Circle clone = new Circle(getCenter(), getRadius());
+        Circle clone = new Circle(Map.of("center", getCenter(), "radius", getRadius()));
+
         return clone;
     }
 
     @Override
-    public void update(Object... attributes) {
-        update((Point) attributes[0], (int) attributes[1]);
+    public void update(Map<String,Object> attributes) {
+        update((Point) attributes.get("center") , (int) attributes.get("radius"));
+
     }
 
     public void update(Point center, int radius) {

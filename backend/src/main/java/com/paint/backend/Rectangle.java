@@ -6,13 +6,17 @@ import java.util.ArrayList;
 
 public class Rectangle extends PolygonShape {
 
-    public Rectangle(Object... attributes) {
-        update(attributes);
+    
+    public Rectangle() {
+    }
+    public Rectangle(Map<String, Object> attributes) {
+        super(attributes);
     }
 
     @Override
-    public void update(Object... attributes) {
-        update((ArrayList<Point>) attributes[0]);
+    public void update(Map<String,Object> attributes) {
+        update((ArrayList<Point>) attributes.get("points"));
+
     }
 
     public void update(ArrayList<Point> points) {
@@ -21,7 +25,8 @@ public class Rectangle extends PolygonShape {
 
     @Override
     public Shape clone() {
-        Rectangle clone = new Rectangle(getPoints());
+        Rectangle clone = new Rectangle(Map.of("points", getPoints()));
+
         return clone;
     }
 

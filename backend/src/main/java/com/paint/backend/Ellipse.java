@@ -7,7 +7,12 @@ public class Ellipse extends EllipticalShape {
     private int mainRadius;
     private int secondaryRadius;
 
-    public Ellipse(Object... attributes) {
+    public Ellipse() {
+
+    }
+
+    public Ellipse(Map<String,Object> attributes) {
+
         update(attributes);
 
     }
@@ -30,13 +35,15 @@ public class Ellipse extends EllipticalShape {
 
     @Override
     public Shape clone() {
-        Ellipse clone = new Ellipse(getCenter(), getMainRadius(), getSecondaryRadius());
+        Ellipse clone = new Ellipse(Map.of("center", getCenter(), "mainRadius", getMainRadius(), "secondaryRadius", getSecondaryRadius()));
+
         return clone;
     }
 
     @Override
-    public void update(Object... attributes) {
-        update((Point) attributes[0], (int) attributes[1], (int) attributes[2]);
+    public void update(Map<String,Object> attributes) {
+        update((Point) attributes.get("center") , (int) attributes.get("mainRadius"), (int) attributes.get("secondaryRadius"));
+
     }
 
     public void update(Point center, int mainRadius, int secondaryRadius) {

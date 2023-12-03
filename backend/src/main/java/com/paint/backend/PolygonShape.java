@@ -8,7 +8,11 @@ public class PolygonShape implements Shape {
     int id;
     ArrayList<Point> points;
 
-    public PolygonShape(Object... attributes) {
+    public PolygonShape() {
+
+    }
+    public PolygonShape(Map<String,Object> attributes) {
+
         update(attributes);
     }
 
@@ -30,13 +34,15 @@ public class PolygonShape implements Shape {
 
     @Override
     public Shape clone() {
-        PolygonShape clone = new PolygonShape(getPoints());
+        PolygonShape clone = new PolygonShape(Map.of("points", getPoints()));
+
         return clone;
     }
 
     @Override
-    public void update(Object... attributes) {
-        update((ArrayList<Point>) attributes[0]);
+    public void update(Map<String,Object> attributes) {
+        update((ArrayList<Point>) attributes.get("points"));
+
     }
 
     public void update(ArrayList<Point> points) {
@@ -50,12 +56,13 @@ public class PolygonShape implements Shape {
                 "points", getPoints());
     }
 
-    public static void main(String[] args) {
-        Shape c = ShapeFactory.getInstance().create("circle", new Point(0, 0), 5);
-        ShapeFactory.getInstance().clone(0);
-        ArrayList<Shape> shapes = ShapeFactory.getInstance().getAllShapes();
-        for (Shape s : shapes) {
-            System.out.println(ShapeFactory.getInstance().read(s.getId()));
-        }
-    }
+    // public static void main(String[] args) {
+    //     Shape c = ShapeFactory.getInstance().create("circle", new Point(0, 0), 5);
+    //     ShapeFactory.getInstance().clone(0);
+    //     ArrayList<Shape> shapes = ShapeFactory.getInstance().getAllShapes();
+    //     for (Shape s : shapes) {
+    //         System.out.println(ShapeFactory.getInstance().read(s.getId()));
+    //     }
+    // }
+
 }

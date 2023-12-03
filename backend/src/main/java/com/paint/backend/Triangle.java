@@ -6,13 +6,16 @@ import java.util.ArrayList;
 
 public class Triangle extends PolygonShape {
 
-    public Triangle(Object... attributes) {
-        update(attributes);
+    public Triangle() {
+    }
+    public Triangle(Map<String,Object> attributes) {
+        super(attributes);
     }
 
     @Override
-    public void update(Object... attributes) {
-        update((ArrayList<Point>) attributes[0]);
+    public void update(Map<String,Object> attributes) {
+        update((ArrayList<Point>) attributes.get("points"));
+
     }
 
     public void update(ArrayList<Point> points) {
@@ -21,7 +24,8 @@ public class Triangle extends PolygonShape {
 
     @Override
     public Shape clone() {
-        Triangle clone = new Triangle(getPoints());
+        Triangle clone = new Triangle(Map.of("points", getPoints()));
+
         return clone;
     }
 
