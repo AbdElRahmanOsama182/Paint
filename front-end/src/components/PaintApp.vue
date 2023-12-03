@@ -28,6 +28,7 @@
                 <button> </button>
                 <button> </button>
             </div>
+<<<<<<< HEAD
                 <div class="popup">
                     <button class="customcolor" @click="showPicker" :style="{backgroundColor: currentColor}">
                         <p v-if="isPopupVisible">▿</p>
@@ -42,6 +43,9 @@
                         </v-color-picker>
                     </div>
                     </div> 
+=======
+            <button class="customcolor"> custom color </button>
+>>>>>>> 024df6a589446c6f2d698b242efd404678f946cb
         </div>
 
     <div class="wrapper">
@@ -62,8 +66,11 @@ export default {
             y: 550,
             startX: 0,
             startY: 0,
+<<<<<<< HEAD
             isPopupVisible: false,
             currentColor: 0
+=======
+>>>>>>> 024df6a589446c6f2d698b242efd404678f946cb
         };
     },
     methods: {
@@ -73,7 +80,11 @@ export default {
             this.startY = event.clientY - this.y;
         },
         dragging(event) {
+<<<<<<< HEAD
             if (this.isDragging && !this.isPopupVisible) {
+=======
+            if (this.isDragging) {
+>>>>>>> 024df6a589446c6f2d698b242efd404678f946cb
                 this.x = event.clientX - this.startX;
                 this.y = event.clientY - this.startY;
         }
@@ -81,6 +92,7 @@ export default {
         stopDrag() {
             this.isDragging = false;
         },
+<<<<<<< HEAD
         showPicker(){
             document.getElementById("PopUp").classList.toggle("showColorPicker");
             this.isPopupVisible = !this.isPopupVisible;
@@ -94,6 +106,8 @@ export default {
             }
         }
         
+=======
+>>>>>>> 024df6a589446c6f2d698b242efd404678f946cb
     },
 }
 </script>
@@ -182,12 +196,17 @@ export default {
 .colors button:nth-child(6) {background-color: green;}
 .colors button:nth-child(7) {background-color: magenta;}
 .colors button:nth-child(8) {background-color: red;}
+<<<<<<< HEAD
 
 .popup{
+=======
+.customcolor{
+>>>>>>> 024df6a589446c6f2d698b242efd404678f946cb
     grid-column: span 2;
     grid-row: span 2;
     width: 60px;
     height: auto;
+<<<<<<< HEAD
     position: relative;
 }
 
@@ -209,6 +228,8 @@ export default {
 .showColorPicker {
   display: block;
   margin-bottom: 20px;
+=======
+>>>>>>> 024df6a589446c6f2d698b242efd404678f946cb
 }
 
 </style>

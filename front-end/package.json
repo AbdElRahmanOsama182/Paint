@@ -7,11 +7,16 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@syncfusion/ej2-vue-inputs": "^23.2.4",
     "core-js": "^3.8.3",
     "verte": "^0.0.12",
     "vue": "^3.2.13",
     "vuetify": "^3.4.4"
+=======
+    "core-js": "^3.8.3",
+    "vue": "^3.2.13"
+>>>>>>> 024df6a589446c6f2d698b242efd404678f946cb
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~5.0.0",
