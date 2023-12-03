@@ -13,10 +13,12 @@
                 <button> redo </button>
             </div>
             <div class="shapes">
-                <button> ◌ </button>
-                <button> ◻</button>
-                <button> ☖ </button>
-                <button> / </button>
+                <button @click="drawShape('Circle')"> ◯ </button>
+                <button @click="drawShape('Ellipse')"> ⬯ </button>
+                <button @click="drawShape('Rectangle')"> ▭ </button>
+                <button @click="drawShape('Square')"> ◻</button>
+                <button @click="drawShape('Triangle')"> △ </button>
+                <button @click="drawShape('Line')"> / </button>
             </div>
             <div class="colors">
                 <button> </button>
@@ -32,13 +34,17 @@
         </div>
 
     <div class="wrapper">
-        <div class="canvas" :style="{ width: `${CW}px`, height: `${CH}px`}"></div>
+        <div @dblclick="selectShape" @mousedown="Action" @mouseup="stopDrawing" class="canvas" :style="{ width: `${CW}px`, height: `${CH}px`}">
+            
+        </div>
     </div>
 
     </div>
 </template>
 
 <script>
+import Konva from 'konva';
+import { Stage, Layer, Rect, Circle, Ellipse, Line } from 'konva';
 export default {
     data(){
         return{
@@ -49,9 +55,209 @@ export default {
             y: 550,
             startX: 0,
             startY: 0,
+            drawingShape: null,
+            isDrawing: false,
+            stage: null,
+            layer: null,
+            slectedShapeIndex: null,
+            transformer: null,
+            selectionRectangle: null,
         };
     },
+    mounted(){
+        this.stage = new Konva.Stage({
+            container: '.canvas',
+            width: this.CW,
+            height: this.CH,
+        });
+        this.layer = new Konva.Layer();
+        this.stage.add(this.layer);
+        this.transformer = new Konva.Transformer();
+        this.layer.add(this.transformer);
+        this.selectionRectangle = new Konva.Rect({
+            fill: 'rgba(0,0,255,0.5)',
+            visible: false,
+        });
+        this.layer.add(this.selectionRectangle);
+        console.log('mounted');
+    },
     methods: {
+        Action(){
+            if(this.isDrawing) this.startDrawing();
+            else this.selectWindow();
+        },
+        selectWindow(){
+            this.stage.off('mousemove');
+            this.stage.off('mouseup');
+            const pos = this.stage.getPointerPosition();
+            const shape = this.stage.getIntersection(pos);
+            if (shape) return;
+            this.transformer.nodes([]);
+            var x1, y1, x2, y2;
+            x1 = this.stage.getPointerPosition().x;
+            y1 = this.stage.getPointerPosition().y;
+            x2 = this.stage.getPointerPosition().x;
+            y2 = this.stage.getPointerPosition().y;
+            this.selectionRectangle.visible(true);
+            console.log(this.selectionRectangle.visible());
+            this.selectionRectangle.width(0);
+            this.selectionRectangle.height(0);
+            this.stage.on('mousemove', (e) => {
+                if (!this.selectionRectangle.visible()) return;
+                e.evt.preventDefault();
+                x2 = this.stage.getPointerPosition().x;
+                y2 = this.stage.getPointerPosition().y;
+                this.selectionRectangle.setAttrs({
+                    x: Math.min(x1, x2),
+                    y: Math.min(y1, y2),
+                    width: Math.abs(x2 - x1),
+                    height: Math.abs(y2 - y1),
+                });
+            });
+            this.stage.on('mouseup', (e) => {
+                if (!this.selectionRectangle.visible()) return;
+                e.evt.preventDefault();
+                setTimeout(() => {
+                    this.selectionRectangle.visible(false);
+                });
+                var shapes = this.stage.find('Shape');
+                var box = this.selectionRectangle.getClientRect();
+                
+                var selected = shapes.filter((shape) =>
+                    shape !== this.selectionRectangle &&
+                  Konva.Util.haveIntersection(box, shape.getClientRect())
+                );
+                console.log(selected);
+                if (selected.length > 0) this.transformer.nodes(selected);
+            });
+        },
+        drawShape(shape){
+            this.drawingShape = shape;
+            this.isDrawing = true;
+            console.log(this.drawingShape);
+        },
+        createShape(pos){
+            switch (this.drawingShape) {
+                case 'Circle':
+                    return new Konva.Circle({
+                        x: pos.x,
+                        y: pos.y,
+                        radius: 50,
+                        fill: 'transparent',
+                        stroke: 'black',
+                        strokeWidth: 2,
+                    });
+                case 'Ellipse':
+                    return new Konva.Ellipse({
+                        x: pos.x,
+                        y: pos.y,
+                        radiusX: 50,
+                        radiusY: 20,
+                        fill: 'transparent',
+                        stroke: 'black',
+                        strokeWidth: 2,
+                    });
+                case 'Square':
+                    console.log("square");
+                    return new Konva.Rect({
+                        x: pos.x,
+                        y: pos.y,
+                        width: 50,
+                        height: 50,
+                        fill: 'transparent',
+                        stroke: 'black',
+                        strokeWidth: 2,
+                    });
+                case 'Rectangle':
+                    return new Konva.Rect({
+                        x: pos.x,
+                        y: pos.y,
+                        width: 80,
+                        height: 50,
+                        fill: 'transparent',
+                        stroke: 'black',
+                        strokeWidth: 2,
+                    });
+                case 'Triangle':
+                    return new Konva.RegularPolygon({
+                        x: pos.x,
+                        y: pos.y,
+                        sides: 3,
+                        radius: 50,
+                        fill: 'transparent',
+                        stroke: 'black',
+                        strokeWidth: 2,
+                    });
+                case 'Line':
+                    return new Konva.Line({
+                        points: [pos.x, pos.y, pos.x, pos.y],
+                        stroke: 'black',
+                        strokeWidth: 2,
+                    });
+            }
+        },
+        startDrawing(event){
+            console.log("start drawing");
+            this.transformer.nodes([]);
+            this.isDrawing = true;
+            const shape = this.createShape(this.stage.getPointerPosition());
+            this.layer.add(shape);
+            this.layer.draw();
+            this.stage.on('mousemove', this.drawing);
+        },
+        stopDrawing(event){
+            console.log("stop drawing");
+            this.stage.off('mousemove', this.drawing);
+            this.isDrawing = false;
+        },
+        drawing(event) {
+            console.log("drawing");
+            if (!this.isDrawing) return;
+
+            const pos = this.stage.getPointerPosition();
+            const shape = this.layer.children[this.layer.children.length - 1];
+
+            switch (this.drawingShape) {
+                case 'Circle':
+                    const radius = Math.max(Math.abs(pos.x - shape.x()), Math.abs(pos.y - shape.y()));
+                    shape.radius(radius);
+                    break;
+                case 'Ellipse':
+                    shape.radiusX(Math.abs(pos.x - shape.x()));
+                    shape.radiusY(Math.abs(pos.y - shape.y()));
+                    break;
+                case 'Square':
+                    const sideLength = Math.max(Math.abs(pos.x - shape.x()), Math.abs(pos.y - shape.y()));
+                    shape.width(sideLength);
+                    shape.height(sideLength);
+                    break;
+                case 'Rectangle':
+                    shape.width(Math.abs(pos.x - shape.x()));
+                    shape.height(Math.abs(pos.y - shape.y()));
+                    break;
+                case 'Triangle':
+                    shape.radius(Math.max(Math.abs(pos.x - shape.x()), Math.abs(pos.y - shape.y())));
+                    break;
+                case 'Line':
+                    shape.points([shape.points()[0], shape.points()[1], pos.x, pos.y]);
+                    break;
+            }
+            this.layer.batchDraw();
+        },
+        selectShape(event) {
+            const pos = this.stage.getPointerPosition();
+            const shape = this.stage.getIntersection(pos);
+            if (shape) {
+                this.slectedShapeIndex = shape.index;
+                console.log(this.slectedShapeIndex);
+                this.transformer.nodes([this.layer.children[this.slectedShapeIndex]]);
+                console.log(`Shape selected: ${this.layer.children[this.slectedShapeIndex].name()}`);
+            }
+            else {
+                this.transformer.nodes([]);
+                console.log('No shape selected');
+            }
+        },
         startDrag(event) {
             this.isDragging = true;
             this.startX = event.clientX - this.x;
