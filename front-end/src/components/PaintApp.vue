@@ -102,7 +102,7 @@ export default {
             const shape = this.stage.getIntersection(pos);
             if (shape) return;
             this.transformer.nodes([]);
-            var x1, y1, x2, y2;
+            let x1, y1, x2, y2;
             x1 = this.stage.getPointerPosition().x;
             y1 = this.stage.getPointerPosition().y;
             x2 = this.stage.getPointerPosition().x;
@@ -129,10 +129,10 @@ export default {
                 setTimeout(() => {
                     this.selectionRectangle.visible(false);
                 });
-                var shapes = this.stage.find('Shape');
-                var box = this.selectionRectangle.getClientRect();
+                let shapes = this.stage.find('Shape');
+                let box = this.selectionRectangle.getClientRect();
 
-                var selected = shapes.filter((shape) =>
+                let selected = shapes.filter((shape) =>
                     shape !== this.selectionRectangle &&
                     Konva.Util.haveIntersection(box, shape.getClientRect())
                 );
