@@ -28,11 +28,35 @@ const HistoryFunctions = {
         this.history = this.history.slice(0, this.historyIndex + 1);
     },
     saveRecord() {
+        if (this.history.length > 0) {
+            const historyPop = this.history[this.historyIndex];
+            if (this.layer.children.length === historyPop.children.length) {
+                const isEqual = this.layer.children.every((child, index) => {
+                    if (child.index === 0 || child.index === 1) {
+                        return true;
+                    }
+                    return (
+                        child.x() === historyPop.children[index].x() &&
+                        child.y() === historyPop.children[index].y() &&
+                        child.width() === historyPop.children[index].width() &&
+                        child.height() === historyPop.children[index].height() &&
+                        child.fill() === historyPop.children[index].fill() &&
+                        true
+                    );
+                });
+                console.log(`Are they equal? ${isEqual}`);
+                if (isEqual) {
+                    return;
+                }
+            }
+        }
         this.clearHistory();
-        let newLayer = this.layer.clone();
+        const newLayer = this.layer.clone();
         this.history.push(newLayer);
         this.historyIndex += 1;
+        console.log(this.historyIndex);
     },
+    
 }
 
 export { HistoryFunctions }
