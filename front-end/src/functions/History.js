@@ -56,7 +56,6 @@ const HistoryFunctions = {
         this.historyIndex += 1;
         console.log(this.historyIndex);
     },
-    
 }
 
 export { HistoryFunctions }
