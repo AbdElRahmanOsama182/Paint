@@ -11,6 +11,8 @@
                 <button> undo </button>
                 <button> save</button>
                 <button> redo </button>
+                <button @click="deleteShape" :style="{backgroundColor: deleteColor}"> delete </button>
+                <button>👽</button>
             </div>
             <div class="shapes">
                 <button @click="drawShape('Circle')"> ◯ </button>
@@ -75,7 +77,9 @@ export default {
             transformer: null,
             selectionRectangle: null,
             isPopupVisible: false,
-            currentColor: 0
+            currentColor: 0,
+            isDeletable: false,
+            deleteColor: 'white',
         };
     },
     mounted(){
@@ -86,10 +90,15 @@ export default {
         });
         this.layer = new Konva.Layer();
         this.stage.add(this.layer);
-        this.transformer = new Konva.Transformer();
+        this.transformer = new Konva.Transformer({
+            shouldOverdrawWholeArea: true,
+            isTransforming: true
+
+        });
         this.layer.add(this.transformer);
         this.selectionRectangle = new Konva.Rect({
-            fill: 'rgba(0,0,255,0.5)',
+            fill: 'rgba(0,149,255,0.25)',
+            stroke: 'rgba(0,149,255)',
             visible: false,
         });
         this.layer.add(this.selectionRectangle);
@@ -106,7 +115,7 @@ export default {
             const pos = this.stage.getPointerPosition();
             const shape = this.stage.getIntersection(pos);
             if (shape) return;
-            this.transformer.nodes([]);
+            this.emptyTransformer();
             var x1, y1, x2, y2;
             x1 = this.stage.getPointerPosition().x;
             y1 = this.stage.getPointerPosition().y;
@@ -143,6 +152,14 @@ export default {
                 );
                 console.log(selected);
                 if (selected.length > 0) this.transformer.nodes(selected);
+                selected.forEach((shape) => shape.draggable(true));
+
+                if(this.isDeletable){
+                    selected.forEach((shape) => 
+                    shape.destroy(),
+                    this.transformer.detach(shape)
+                    );
+                }
             });
         },
         drawShape(shape){
@@ -212,7 +229,7 @@ export default {
         },
         startDrawing(event){
             console.log("start drawing");
-            this.transformer.nodes([]);
+            this.emptyTransformer();
             this.isDrawing = true;
             const shape = this.createShape(this.stage.getPointerPosition());
             this.layer.add(shape);
@@ -227,7 +244,6 @@ export default {
         drawing(event) {
             console.log("drawing");
             if (!this.isDrawing) return;
-
             const pos = this.stage.getPointerPosition();
             const shape = this.layer.children[this.layer.children.length - 1];
 
@@ -266,9 +282,14 @@ export default {
                 console.log(this.slectedShapeIndex);
                 this.transformer.nodes([this.layer.children[this.slectedShapeIndex]]);
                 console.log(`Shape selected: ${this.layer.children[this.slectedShapeIndex].name()}`);
+                this.layer.children[this.slectedShapeIndex].draggable(true);
+                if(this.isDeletable){
+                    this.layer.children[this.slectedShapeIndex].destroy();
+                    this.transformer.detach(this.layer.children[this.slectedShapeIndex]);
+                }
             }
             else {
-                this.transformer.nodes([]);
+                this.emptyTransformer();
                 console.log('No shape selected');
             }
         },
@@ -297,7 +318,20 @@ export default {
             if(this.isPopupVisible){
                 this.showPicker();
             }
-        }
+        },
+        deleteShape(){
+            this.isDeletable = !this.isDeletable;
+            if(this.isDeletable){
+                this.deleteColor = '#DE0909';
+            }
+            else{
+                this.deleteColor = 'white';
+            }
+        },
+        emptyTransformer(){
+            this.transformer.nodes().forEach((shape) => shape.draggable(false));
+            this.transformer.nodes([]);
+        },
     },
 }
 </script>
