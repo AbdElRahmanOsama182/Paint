@@ -86,8 +86,6 @@ export default {
         this.stage.add(this.layer);
         this.transformer = new Konva.Transformer(
             {
-                rotateEnabled: false,
-                enabledAnchors: ['middle-left', 'middle-right', 'bottom-center', 'top-center'],
                 keepRatio: false,
                 anchorSize: 10,
                 borderStroke: 'rgba(0,0,255,0.5)',
@@ -103,7 +101,8 @@ export default {
         })
         this.layer.add(this.transformer);
         this.selectionRectangle = new Konva.Rect({
-            fill: 'rgba(0,0,255,0.5)',
+            fill: 'rgba(0,149,255,0.25)',
+            stroke: 'rgba(0,149,255)',
             visible: false,
         });
         this.layer.add(this.selectionRectangle);
