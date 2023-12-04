@@ -6,7 +6,7 @@ const DrawingFunctions = {
                     x: pos.x,
                     y: pos.y,
                     radius: 50,
-                    fill: 'black',
+                    fill: 'transparent',
                     stroke: 'black',
                     strokeWidth: 2,
                 });
@@ -16,7 +16,7 @@ const DrawingFunctions = {
                     y: pos.y,
                     radiusX: 50,
                     radiusY: 20,
-                    fill: 'black',
+                    fill: 'transparent',
                     stroke: 'black',
                     strokeWidth: 2,
                 });
@@ -27,7 +27,7 @@ const DrawingFunctions = {
                     y: pos.y,
                     width: 50,
                     height: 50,
-                    fill: 'black',
+                    fill: 'transparent',
                     stroke: 'black',
                     strokeWidth: 2,
                 });
@@ -37,7 +37,7 @@ const DrawingFunctions = {
                     y: pos.y,
                     width: 80,
                     height: 50,
-                    fill: 'black',
+                    fill: 'transparent',
                     stroke: 'black',
                     strokeWidth: 2,
                 });
@@ -47,7 +47,7 @@ const DrawingFunctions = {
                     y: pos.y,
                     sides: 3,
                     radius: 50,
-                    fill: 'black',
+                    fill: 'transparent',
                     stroke: 'black',
                     strokeWidth: 2,
                 });
