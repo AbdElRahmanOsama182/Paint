@@ -4,9 +4,9 @@
             @mouseup="stopDrag" @mouseleave="stopDrag">
             <div class="commands">
                 <button> load </button>
-                <button> undo </button>
+                <button @click="undo()"> undo </button>
                 <button> save</button>
-                <button> redo </button>
+                <button @click="redo()"> redo </button>
             </div>
             <div class="shapes">
                 <button @click="drawShape('Circle')"> ◯ </button>
@@ -52,6 +52,7 @@
 import Konva from 'konva';
 import { Stage, Layer, Rect, Circle, Ellipse, Line } from 'konva';
 import { DrawingFunctions } from '../functions/Drawing.js';
+import { HistoryFunctions } from '../functions/History.js';
 export default {
     data() {
         return {
@@ -70,7 +71,9 @@ export default {
             transformer: null,
             selectionRectangle: null,
             isPopupVisible: false,
-            currentColor: 0
+            currentColor: 0,
+            history: [],
+            historyIndex: 0,
         };
     },
     mounted() {
@@ -81,14 +84,31 @@ export default {
         });
         this.layer = new Konva.Layer();
         this.stage.add(this.layer);
-        this.transformer = new Konva.Transformer();
+        this.transformer = new Konva.Transformer(
+            {
+                rotateEnabled: false,
+                enabledAnchors: ['middle-left', 'middle-right', 'bottom-center', 'top-center'],
+                keepRatio: false,
+                anchorSize: 10,
+                borderStroke: 'rgba(0,0,255,0.5)',
+                borderStrokeWidth: 1,
+                borderDash: [3, 3],
+                ignoreStroke: true,
+                padding: 5,
+            }
+        );
+        this.transformer.on("transformend", function (e) {
+            console.log(e);
+            e.target.setAttrs({ ...e.target.attrs, strokeWidth: 1 })
+        })
         this.layer.add(this.transformer);
         this.selectionRectangle = new Konva.Rect({
             fill: 'rgba(0,0,255,0.5)',
             visible: false,
         });
         this.layer.add(this.selectionRectangle);
-        console.log('mounted');
+        this.history.push(this.layer.clone());
+
     },
     methods: {
         Action() {
@@ -108,7 +128,6 @@ export default {
             x2 = this.stage.getPointerPosition().x;
             y2 = this.stage.getPointerPosition().y;
             this.selectionRectangle.visible(true);
-            console.log(this.selectionRectangle.visible());
             this.selectionRectangle.width(0);
             this.selectionRectangle.height(0);
             this.stage.on('mousemove', (e) => {
@@ -136,7 +155,6 @@ export default {
                     shape !== this.selectionRectangle &&
                     Konva.Util.haveIntersection(box, shape.getClientRect())
                 );
-                console.log(selected);
                 if (selected.length > 0) this.transformer.nodes(selected);
             });
         },
@@ -145,7 +163,7 @@ export default {
             const shape = this.stage.getIntersection(pos);
             if (shape) {
                 this.slectedShapeIndex = shape.index;
-                console.log(this.slectedShapeIndex);
+                console.log("selecred shape", this.slectedShapeIndex, this.layer.children[this.slectedShapeIndex]);
                 this.transformer.nodes([this.layer.children[this.slectedShapeIndex]]);
                 console.log(`Shape selected: ${this.layer.children[this.slectedShapeIndex].name()}`);
             }
@@ -185,6 +203,7 @@ export default {
                 this.showPicker();
             }
         },
+        ...HistoryFunctions,
         ...DrawingFunctions,
     },
 }
