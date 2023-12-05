@@ -7,6 +7,8 @@
                 <button @click="undo()"> undo </button>
                 <button> save</button>
                 <button @click="redo()"> redo </button>
+                <button @click="deleteShape" :style="{backgroundColor: deleteColor}"> delete </button>
+                <button>👽</button>
             </div>
             <div class="shapes">
                 <button @click="drawShape('Circle')"> ◯ </button>
@@ -74,6 +76,8 @@ export default {
             currentColor: 0,
             history: [],
             historyIndex: 0,
+            isDeletable: false,
+            deleteColor: 'white',
         };
     },
     mounted() {
@@ -93,6 +97,7 @@ export default {
                 borderDash: [3, 3],
                 ignoreStroke: true,
                 padding: 5,
+                shouldOverdrawWholeArea: true,
             }
         );
         this.transformer.on("transformend", function (e) {
@@ -107,8 +112,13 @@ export default {
         });
         this.layer.add(this.selectionRectangle);
         this.history.push(this.layer.clone());
-
+        document.addEventListener('keyup', this.delKey);
     },
+
+    beforeDestroy() {
+        document.removeEventListener('keyup', this.delKey);
+    },
+
     methods: {
         Action() {
             if (this.isDrawing) this.startDrawing();
@@ -120,7 +130,7 @@ export default {
             const pos = this.stage.getPointerPosition();
             const shape = this.stage.getIntersection(pos);
             if (shape) return;
-            this.transformer.nodes([]);
+            this.emptyTransformer();
             let x1, y1, x2, y2;
             x1 = this.stage.getPointerPosition().x;
             y1 = this.stage.getPointerPosition().y;
@@ -155,19 +165,27 @@ export default {
                     Konva.Util.haveIntersection(box, shape.getClientRect())
                 );
                 if (selected.length > 0) this.transformer.nodes(selected);
+                this.moveSelectedShapes();
+                if(this.isDeletable){
+                    this.deleteSelectedShapes();
+                }
             });
         },
         selectShape(event) {
             const pos = this.stage.getPointerPosition();
             const shape = this.stage.getIntersection(pos);
-            if (shape) {
+            if (shape && shape.index != 0) {
                 this.slectedShapeIndex = shape.index;
                 console.log("selecred shape", this.slectedShapeIndex, this.layer.children[this.slectedShapeIndex]);
                 this.transformer.nodes([this.layer.children[this.slectedShapeIndex]]);
                 console.log(`Shape selected: ${this.layer.children[this.slectedShapeIndex].name()}`);
+                this.moveSelectedShapes();
+                if(this.isDeletable){
+                    this.deleteSelectedShapes();
+                }
             }
             else {
-                this.transformer.nodes([]);
+                this.emptyTransformer();
                 console.log('No shape selected');
             }
         },
@@ -200,6 +218,37 @@ export default {
         closePopup() {
             if (this.isPopupVisible) {
                 this.showPicker();
+            }
+        },
+        deleteShape(){
+            this.isDeletable = !this.isDeletable;
+            if(this.isDeletable){
+                this.deleteColor = '#DE0909';
+            }
+            else{
+                this.deleteColor = 'white';
+            }
+        },
+        emptyTransformer(){
+            if(this.transformer){
+                this.transformer.nodes().forEach((shape) => shape.draggable(false));
+                this.transformer.nodes([]);
+            }
+        },
+        deleteSelectedShapes(){
+            if(this.transformer){
+                this.transformer.nodes().forEach((shape) => shape.destroy());
+                this.transformer.nodes([]);
+            }
+        },
+        moveSelectedShapes(){
+            if(this.transformer){
+                this.transformer.nodes().forEach((shape) => shape.draggable(true));
+            }
+        },
+        delKey(event){
+            if(event.keyCode == 46){
+                this.deleteSelectedShapes();
             }
         },
         ...HistoryFunctions,
