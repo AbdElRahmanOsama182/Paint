@@ -131,6 +131,13 @@ public class PolygonShape implements Shape {
                 "sides", getSides());
     }
 
-
+    // public static void main(String[] args) {
+    // Shape c = ShapeManager.getInstance().create("circle", new Point(0, 0), 5);
+    // ShapeManager.getInstance().clone(0);
+    // ArrayList<Shape> shapes = ShapeManager.getInstance().getAllShapes();
+    // for (Shape s : shapes) {
+    // System.out.println(ShapeManager.getInstance().read(s.getId()));
+    // }
+    // }
 
 }
