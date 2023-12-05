@@ -1,3 +1,5 @@
+
+
 const DrawingFunctions = {
     createShape(pos){
         switch (this.drawingShape) {
@@ -6,7 +8,7 @@ const DrawingFunctions = {
                     x: pos.x,
                     y: pos.y,
                     radius: 50,
-                    fill: 'black',
+                    fill: this.currentColor,
                 });
             case 'Ellipse':
                 return new Konva.Ellipse({
@@ -14,7 +16,7 @@ const DrawingFunctions = {
                     y: pos.y,
                     radiusX: 50,
                     radiusY: 20,
-                    fill: 'black',
+                    fill: this.currentColor,
                 });
             case 'Square':
                 console.log("square");
@@ -23,7 +25,7 @@ const DrawingFunctions = {
                     y: pos.y,
                     width: 50,
                     height: 50,
-                    fill: 'black',
+                    fill: this.currentColor,
                 });
             case 'Rectangle':
                 return new Konva.Rect({
@@ -31,7 +33,7 @@ const DrawingFunctions = {
                     y: pos.y,
                     width: 80,
                     height: 50,
-                    fill: 'black',
+                    fill: this.currentColor,
                 });
             case 'Triangle':
                 return new Konva.RegularPolygon({
@@ -39,12 +41,12 @@ const DrawingFunctions = {
                     y: pos.y,
                     sides: 3,
                     radius: 50,
-                    fill: 'black',
+                    fill: this.currentColor,
                 });
             case 'Line':
                 return new Konva.Line({
                     points: [pos.x, pos.y, pos.x+10, pos.y+10],
-                    stroke: 'black',
+                    stroke: this.currentColor,
                     strokeWidth: 1.5,
                 });
         }
