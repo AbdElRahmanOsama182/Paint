@@ -3,7 +3,7 @@ const HistoryFunctions = {
     undo() {
         if (this.historyIndex === 0) return;
         this.historyIndex -= 1;
-        console.log(this.history)
+        console.log("to copy",this.history)
         this.drawNewLayer()
     },
     redo() {
@@ -22,6 +22,7 @@ const HistoryFunctions = {
         this.transformer = this.layer.children[0]
         this.selectionRectangle=this.layer.children[1]
         this.layer.draw()
+        console.log("new layer", this.layer)
         this.layer.batchDraw()
     },
     clearHistory() {

@@ -89,7 +89,25 @@ public class ShapesController {
     }
 
     @PostMapping("/shape/{id}/copy")
-    public Map<String, Object> copy(@PathVariable("id") String id) {
-        return ShapeManager.getInstance().clone(Integer.parseInt(id)).read();
+    public Map<String, Object> copy(@PathVariable("id") String id, @RequestBody Map<String,Integer> payload) {
+        return ShapeManager.getInstance().clone(Integer.parseInt(id),(Integer)payload.get("newId")).read();
     }
+
+    @PostMapping("/layer/record")
+    public void saveRecord() {
+        ShapeManager.getInstance().saveRecord();
+    }
+
+    @PostMapping("/layer/undo")
+    public void undo() {
+        ShapeManager.getInstance().undo();
+    }
+
+    @PostMapping("/layer/redo")
+    public void redo() {
+        ShapeManager.getInstance().redo();
+        System.out.println(ShapeManager.getInstance().getAllShapes());
+    }
+
+    
 }
