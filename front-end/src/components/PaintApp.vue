@@ -7,8 +7,8 @@
                 <button @click="undo()"> undo </button>
                 <button> save</button>
                 <button @click="redo()"> redo </button>
-                <button @click="deleteShape" :style="{backgroundColor: deleteColor}"> delete </button>
-                <button @click="cloneShape()" :style="{backgroundColor: cloneColor}">clone</button>
+                <button @click="deleteShape" :style="{ backgroundColor: deleteColor }"> delete </button>
+                <button @click="cloneShape()" :style="{ backgroundColor: cloneColor }">clone</button>
             </div>
             <div class="shapes">
                 <button @click="drawShape('Circle')"> ◯ </button>
@@ -28,14 +28,14 @@
             </div>
 
             <div class="colors">
-                <button @click="currentColor='black'"> </button>
-                <button @click="currentColor='white'"> </button>
-                <button @click="currentColor='cyan'"> </button>
-                <button @click="currentColor='blue'"> </button>
-                <button @click="currentColor='yellow'"> </button>
-                <button @click="currentColor='green'"> </button>
-                <button @click="currentColor='magenta'"> </button>
-                <button @click="currentColor='red'"> </button>
+                <button @click="currentColor = 'black'"> </button>
+                <button @click="currentColor = 'white'"> </button>
+                <button @click="currentColor = 'cyan'"> </button>
+                <button @click="currentColor = 'blue'"> </button>
+                <button @click="currentColor = 'yellow'"> </button>
+                <button @click="currentColor = 'green'"> </button>
+                <button @click="currentColor = 'magenta'"> </button>
+                <button @click="currentColor = 'red'"> </button>
             </div>
 
         </div>
@@ -102,9 +102,141 @@ export default {
                 shouldOverdrawWholeArea: true,
             }
         );
-        this.transformer.on("transformend", function (e) {
-            console.log(e);
-            e.target.setAttrs({ ...e.target.attrs, strokeWidth: 1 })
+        this.transformer.on("transformend", async function (e) {
+            console.log(e.currentTarget.nodes());
+            for (let key in e.currentTarget.nodes()) {
+                let shape = e.currentTarget.nodes()[key];
+                console.log(shape.className)
+                switch (shape.className) {
+                    case 'Circle':
+                        await fetch(
+                            `http://localhost:8080/circle/${shape.index}`,
+                            {
+                                method: "PUT",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+
+                                    id: shape.index,
+                                    center: {
+                                        x: shape.x(),
+                                        y: shape.y(),
+                                    },
+                                    radius: shape.radius(),
+                                    color: shape.fill(),
+                                    scaleX: shape.scaleX(),
+                                    scaleY: shape.scaleY(),
+                                    rotation: shape.rotation(),
+                                }),
+                            }
+                        ).then((res) => res.json())
+                            .then((data) => console.log("success", data));
+                        break;
+                    case 'Ellipse':
+                        await fetch(
+                            `http://localhost:8080/ellipse/${shape.index}`,
+                            {
+                                method: "PUT",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+
+                                    id: shape.index,
+                                    center: {
+                                        x: shape.x(),
+                                        y: shape.y(),
+                                    },
+                                    radiusX: shape.radiusX(),
+                                    radiusY: shape.radiusY(),
+                                    color: shape.fill(),
+                                    scaleX: shape.scaleX(),
+                                    scaleY: shape.scaleY(),
+                                    rotation: shape.rotation(),
+                                }),
+                            }
+                        ).then((res) => res.json())
+                            .then((data) => console.log("success", data));
+                        break;
+                    case 'Rect':
+                        await fetch(
+                            `http://localhost:8080/rectangle/${shape.index}`,
+                            {
+                                method: "PUT",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+
+                                    id: shape.index,
+                                        x: shape.x(),
+                                        y: shape.y(),
+                                    width: shape.width(),
+                                    height: shape.height(),
+                                    color: shape.fill(),
+                                    scaleX: shape.scaleX(),
+                                    scaleY: shape.scaleY(),
+                                    rotation: shape.rotation(),
+                                }),
+                            }
+                        ).then((res) => res.json())
+                            .then((data) => console.log("success", data));
+                        break;
+
+                    case 'RegularPolygon':
+                        await fetch(
+                            `http://localhost:8080/triangle/${shape.index}`,
+                            {
+                                method: "PUT",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+
+                                    id: shape.index,
+                                    center: {
+                                        x: shape.x(),
+                                        y: shape.y(),
+                                    },
+                                    radius: shape.radius(),
+                                    color: shape.fill(),
+                                    sides: shape.sides(),
+                                    scaleX: shape.scaleX(),
+                                    scaleY: shape.scaleY(),
+                                    rotation: shape.rotation(),
+                                }),
+                            }
+                        ).then((res) => res.json())
+                            .then((data) => console.log("success", data));
+                        break;
+
+                    case 'Line':
+                        await fetch(
+                            `http://localhost:8080/line/${shape.index}`,
+                            {
+                                method: "PUT",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+
+                                    id: shape.index,
+                                    points: shape.points(),
+                                    color: shape.stroke(),
+                                    scaleX: shape.scaleX(),
+                                    scaleY: shape.scaleY(),
+                                    rotation: shape.rotation(),
+                                }),
+                            }
+                        ).then((res) => res.json())
+                            .then((data) => console.log("success", data));
+                        break;
+
+
+                }
+            }
+
         })
         this.layer.add(this.transformer);
         this.selectionRectangle = new Konva.Rect({
@@ -166,12 +298,13 @@ export default {
                     shape !== this.selectionRectangle &&
                     Konva.Util.haveIntersection(box, shape.getClientRect())
                 );
+                console.log(selected)
                 if (selected.length > 0) this.transformer.nodes(selected);
                 this.moveSelectedShapes();
-                if(this.isDeletable){
+                if (this.isDeletable) {
                     this.deleteSelectedShapes();
                 }
-                if(this.isClonable){
+                if (this.isClonable) {
                     this.cloneSelectedShapes();
                 }
             });
@@ -185,7 +318,7 @@ export default {
                 this.transformer.nodes([this.layer.children[this.slectedShapeIndex]]);
                 console.log(`Shape selected: ${this.layer.children[this.slectedShapeIndex].name()}`);
                 this.moveSelectedShapes();
-                if(this.isDeletable){
+                if (this.isDeletable) {
                     this.deleteSelectedShapes();
                 }
             }
@@ -225,57 +358,57 @@ export default {
                 this.showPicker();
             }
         },
-        cloneShape(){
+        cloneShape() {
             this.isClonable = !this.isClonable;
-            if(this.isDeletable){
+            if (this.isDeletable) {
                 this.isDeletable = !this.isDeletable;
-                this.deleteColor=this.activeColorfn(this.isDeletable);
+                this.deleteColor = this.activeColorfn(this.isDeletable);
             }
-            this.cloneColor=this.activeColorfn(this.isClonable);
+            this.cloneColor = this.activeColorfn(this.isClonable);
         },
-        deleteShape(){
+        deleteShape() {
             this.isDeletable = !this.isDeletable;
-            if(this.isClonable){
+            if (this.isClonable) {
                 this.isClonable = !this.isClonable;
-                this.cloneColor=this.activeColorfn(this.isClonable);
+                this.cloneColor = this.activeColorfn(this.isClonable);
             }
-            this.deleteColor=this.activeColorfn(this.isDeletable);
+            this.deleteColor = this.activeColorfn(this.isDeletable);
         },
-        activeColorfn(bool){
-            if(bool){
+        activeColorfn(bool) {
+            if (bool) {
                 return 'blue';
             }
-            else{
+            else {
                 return 'white';
             }
         },
-        emptyTransformer(){
-            if(this.transformer){
+        emptyTransformer() {
+            if (this.transformer) {
                 this.transformer.nodes().forEach((shape) => shape.draggable(false));
                 this.transformer.nodes([]);
             }
         },
-        deleteSelectedShapes(){
-            if(this.transformer){
+        deleteSelectedShapes() {
+            if (this.transformer) {
                 this.transformer.nodes().forEach((shape) => shape.destroy());
                 this.transformer.nodes([]);
             }
         },
-        cloneSelectedShapes(){
-            if(this.transformer){
-                this.transformer.nodes().forEach((shape) => 
-                this.layer.add(shape.clone().offsetX(100).offsetY(100)),
+        cloneSelectedShapes() {
+            if (this.transformer) {
+                this.transformer.nodes().forEach((shape) =>
+                    this.layer.add(shape.clone().offsetX(100).offsetY(100)),
 
-                this.transformer.nodes([]));
+                    this.transformer.nodes([]));
             }
         },
-        moveSelectedShapes(){
-            if(this.transformer){
+        moveSelectedShapes() {
+            if (this.transformer) {
                 this.transformer.nodes().forEach((shape) => shape.draggable(true));
             }
         },
-        delKey(event){
-            if(event.keyCode == 46){
+        delKey(event) {
+            if (event.keyCode == 46) {
                 this.deleteSelectedShapes();
             }
         },
