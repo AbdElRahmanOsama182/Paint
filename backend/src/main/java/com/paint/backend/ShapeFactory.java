@@ -7,8 +7,7 @@ import java.util.Map;
 
 public class ShapeFactory {
     private static ShapeFactory instance;
-    private static ArrayList<Shape> shapes = new ArrayList<>();
-    private static int nextId = 0;
+    private static Map<Integer, Shape> shapes = new HashMap<>();
 
     private ShapeFactory() {
     }
@@ -21,12 +20,10 @@ public class ShapeFactory {
     }
 
     public static void addShape(Shape shape) {
-        int shapeId = nextId++;
-        shape.setId(shapeId);
-        shapes.add(shape);
+        shapes.put(shape.getId(), shape);
     }
 
-    public static Shape update(int id, Map<String,Object> attributes) {
+    public static Shape update(int id, Map<String, Object> attributes) {
 
         Shape shape = shapes.get(id);
         if (shape != null) {
@@ -62,11 +59,11 @@ public class ShapeFactory {
         shapes.clear();
     }
 
-    public static ArrayList<Shape> getAllShapes() {
-        return new ArrayList<>(shapes);
+    public static Map<Integer, Shape> getAllShapes() {
+        return shapes;
     }
 
-    public static Shape create(String shapeType, Map<String,Object> attributes) {
+    public static Shape create(String shapeType, Map<String, Object> attributes) {
 
         if (shapeType == null) {
             return null;
