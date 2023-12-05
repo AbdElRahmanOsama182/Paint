@@ -8,7 +8,7 @@
                 <button> save</button>
                 <button @click="redo()"> redo </button>
                 <button @click="deleteShape" :style="{backgroundColor: deleteColor}"> delete </button>
-                <button>👽</button>
+                <button @click="cloneShape()" :style="{backgroundColor: cloneColor}">clone</button>
             </div>
             <div class="shapes">
                 <button @click="drawShape('Circle')"> ◯ </button>
@@ -18,26 +18,26 @@
                 <button @click="drawShape('Triangle')"> △ </button>
                 <button @click="drawShape('Line')"> / </button>
             </div>
-            <div class="colors">
-                <button> </button>
-                <button> </button>
-                <button> </button>
-                <button> </button>
-                <button> </button>
-                <button> </button>
-                <button> </button>
-                <button> </button>
-            </div>
-            <div class="popup">
-                <button class="customcolor" @dblclick="showPicker" :style="{ backgroundColor: currentColor }">
-                    <p v-if="isPopupVisible">▿</p>
-                    <p v-else>▵</p>
-                </button>
+            <div class="curr">
+                <button class="customcolor" @dblclick="showPicker" :style="{ backgroundColor: currentColor }"></button>
+
                 <div id="PopUp" class="popup-content">
                     <v-color-picker @update:modelValue="changeColor" @mouseleave="closePopup" color="#e0dfdf">
                     </v-color-picker>
                 </div>
             </div>
+
+            <div class="colors">
+                <button @click="currentColor='black'"> </button>
+                <button @click="currentColor='white'"> </button>
+                <button @click="currentColor='cyan'"> </button>
+                <button @click="currentColor='blue'"> </button>
+                <button @click="currentColor='yellow'"> </button>
+                <button @click="currentColor='green'"> </button>
+                <button @click="currentColor='magenta'"> </button>
+                <button @click="currentColor='red'"> </button>
+            </div>
+
         </div>
 
         <div class="wrapper">
@@ -73,10 +73,12 @@ export default {
             transformer: null,
             selectionRectangle: null,
             isPopupVisible: false,
-            currentColor: 0,
+            currentColor: 'grey',
             history: [],
             historyIndex: 0,
             isDeletable: false,
+            isClonable: false,
+            cloneColor: 'white',
             deleteColor: 'white',
         };
     },
@@ -169,12 +171,15 @@ export default {
                 if(this.isDeletable){
                     this.deleteSelectedShapes();
                 }
+                if(this.isClonable){
+                    this.cloneSelectedShapes();
+                }
             });
         },
         selectShape(event) {
             const pos = this.stage.getPointerPosition();
             const shape = this.stage.getIntersection(pos);
-            if (shape && shape.index != 0) {
+            if (shape && shape.index !== 0 && shape.index !== 1) {
                 this.slectedShapeIndex = shape.index;
                 console.log("selecred shape", this.slectedShapeIndex, this.layer.children[this.slectedShapeIndex]);
                 this.transformer.nodes([this.layer.children[this.slectedShapeIndex]]);
@@ -220,13 +225,28 @@ export default {
                 this.showPicker();
             }
         },
+        cloneShape(){
+            this.isClonable = !this.isClonable;
+            if(this.isDeletable){
+                this.isDeletable = !this.isDeletable;
+                this.deleteColor=this.activeColorfn(this.isDeletable);
+            }
+            this.cloneColor=this.activeColorfn(this.isClonable);
+        },
         deleteShape(){
             this.isDeletable = !this.isDeletable;
-            if(this.isDeletable){
-                this.deleteColor = '#DE0909';
+            if(this.isClonable){
+                this.isClonable = !this.isClonable;
+                this.cloneColor=this.activeColorfn(this.isClonable);
+            }
+            this.deleteColor=this.activeColorfn(this.isDeletable);
+        },
+        activeColorfn(bool){
+            if(bool){
+                return 'blue';
             }
             else{
-                this.deleteColor = 'white';
+                return 'white';
             }
         },
         emptyTransformer(){
@@ -239,6 +259,14 @@ export default {
             if(this.transformer){
                 this.transformer.nodes().forEach((shape) => shape.destroy());
                 this.transformer.nodes([]);
+            }
+        },
+        cloneSelectedShapes(){
+            if(this.transformer){
+                this.transformer.nodes().forEach((shape) => 
+                this.layer.add(shape.clone().offsetX(100).offsetY(100)),
+
+                this.transformer.nodes([]));
             }
         },
         moveSelectedShapes(){
