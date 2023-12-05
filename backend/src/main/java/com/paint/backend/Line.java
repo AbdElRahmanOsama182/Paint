@@ -13,6 +13,7 @@ public class Line implements Shape {
     float rotation;
 
 
+
     public String getColor() {
         return color;
     }
@@ -63,12 +64,14 @@ public class Line implements Shape {
     @Override
     public void update(Map<String, Object> attributes) {
         update((int) attributes.get("id"),(ArrayList<Float>) attributes.get("points"), (String) attributes.get("color"),
+
                 (float) attributes.get("scaleX"), (float) attributes.get("scaleY"),
                 (float) attributes.get("rotation"));
 
     }
 
     public void update(int id,ArrayList<Float> points, String color, float scaleX, float scaleY, float rotation) {
+
         setPoints(points);
         setColor(color);
         setScaleX(scaleX);
@@ -76,12 +79,14 @@ public class Line implements Shape {
         setRotation(rotation);
         setId(id);
 
+
     }
 
     @Override
     public Shape clone(int newId) {
         Line clone = new Line(Map.of("points", getPoints(), "color", getColor(), "scaleX", getScaleX(),
                 "scaleY", getScaleY(), "rotation", getRotation(), "id", newId));
+
 
         return clone;
     }

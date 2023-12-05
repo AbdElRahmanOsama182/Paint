@@ -100,6 +100,7 @@ public class PolygonShape implements Shape {
     @Override
     public void update(Map<String, Object> attributes) {
         update((int) attributes.get("id") ,(Point2D.Float) attributes.get("center"), (float) attributes.get("radius"),
+
                 (int) attributes.get("sides"),
                 (String) attributes.get("color"), (float) attributes.get("scaleX"), (float) attributes.get("scaleY"),
                 (float) attributes.get("rotation"));
@@ -107,6 +108,7 @@ public class PolygonShape implements Shape {
     }
 
     public void update(int id,Point2D.Float center, float radius, int sides, String color, float scaleX, float scaleY,
+
             float rotation) {
         setCenter(center);
         setRadius(radius);
@@ -116,6 +118,7 @@ public class PolygonShape implements Shape {
         setScaleY(scaleY);
         setRotation(rotation);
         setId(id);
+
     }
 
     @Override
@@ -137,6 +140,7 @@ public class PolygonShape implements Shape {
     // ArrayList<Shape> shapes = ShapeManager.getInstance().getAllShapes();
     // for (Shape s : shapes) {
     // System.out.println(ShapeManager.getInstance().read(s.getId()));
+
     // }
     // }
 

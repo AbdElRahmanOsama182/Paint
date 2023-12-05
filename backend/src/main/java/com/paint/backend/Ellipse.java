@@ -41,12 +41,14 @@ public class Ellipse extends EllipticalShape {
                         "rotation", getRotation(), "color", getColor(), "scaleX", getScaleX(),
                         "scaleY", getScaleY(),"id",newId));
 
+
         return clone;
     }
 
     @Override
     public void update(Map<String, Object> attributes) {
         update((int) attributes.get("id"),(Point2D.Float) attributes.get("center"), (float) attributes.get("radiusX"),
+
                 (float) attributes.get("radiusY"), (float) attributes.get("rotation"),
                 (String) attributes.get("color"), (float) attributes.get("scaleX"),
                 (float) attributes.get("scaleY"));
@@ -63,6 +65,7 @@ public class Ellipse extends EllipticalShape {
         setScaleX(scaleX);
         setScaleY(scaleY);
         setId(id);
+
 
     }
 
