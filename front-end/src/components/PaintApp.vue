@@ -112,8 +112,13 @@ export default {
         });
         this.layer.add(this.selectionRectangle);
         this.history.push(this.layer.clone());
-
+        document.addEventListener('keyup', this.delKey);
     },
+
+    beforeDestroy() {
+        document.removeEventListener('keyup', this.delKey);
+    },
+
     methods: {
         Action() {
             if (this.isDrawing) this.startDrawing();
@@ -160,13 +165,9 @@ export default {
                     Konva.Util.haveIntersection(box, shape.getClientRect())
                 );
                 if (selected.length > 0) this.transformer.nodes(selected);
-                selected.forEach((shape) => shape.draggable(true));
-
+                this.moveSelectedShapes();
                 if(this.isDeletable){
-                    selected.forEach((shape) => 
-                    shape.destroy(),
-                    this.transformer.detach(shape)
-                    );
+                    this.deleteSelectedShapes();
                 }
             });
         },
@@ -178,10 +179,9 @@ export default {
                 console.log("selecred shape", this.slectedShapeIndex, this.layer.children[this.slectedShapeIndex]);
                 this.transformer.nodes([this.layer.children[this.slectedShapeIndex]]);
                 console.log(`Shape selected: ${this.layer.children[this.slectedShapeIndex].name()}`);
-                this.layer.children[this.slectedShapeIndex].draggable(true);
+                this.moveSelectedShapes();
                 if(this.isDeletable){
-                    this.layer.children[this.slectedShapeIndex].destroy();
-                    this.transformer.detach(this.layer.children[this.slectedShapeIndex]);
+                    this.deleteSelectedShapes();
                 }
             }
             else {
@@ -230,8 +230,26 @@ export default {
             }
         },
         emptyTransformer(){
-            this.transformer.nodes().forEach((shape) => shape.draggable(false));
-            this.transformer.nodes([]);
+            if(this.transformer){
+                this.transformer.nodes().forEach((shape) => shape.draggable(false));
+                this.transformer.nodes([]);
+            }
+        },
+        deleteSelectedShapes(){
+            if(this.transformer){
+                this.transformer.nodes().forEach((shape) => shape.destroy());
+                this.transformer.nodes([]);
+            }
+        },
+        moveSelectedShapes(){
+            if(this.transformer){
+                this.transformer.nodes().forEach((shape) => shape.draggable(true));
+            }
+        },
+        delKey(event){
+            if(event.keyCode == 46){
+                this.deleteSelectedShapes();
+            }
         },
         ...HistoryFunctions,
         ...DrawingFunctions,
