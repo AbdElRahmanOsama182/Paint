@@ -49,12 +49,156 @@ const DrawingFunctions = {
                 });
         }
     },
-    startDrawing(event){
+    async startDrawing(event){
         this.transformer.nodes([]);
         this.isDrawing = true;
         const shape = this.createShape(this.stage.getPointerPosition());
         this.layer.add(shape);
         this.layer.draw();
+        switch (this.drawingShape) {
+            case 'Circle':
+                await fetch('http://localhost:8080/circle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id:this.layer.children[this.layer.children.length - 1].index,
+                        center:{
+                            x: shape.x(),
+                            y: shape.y(),
+                        },
+                        radius: shape.radius(),
+                        color: shape.fill(),
+                        scaleX: shape.scaleX(),
+                        scaleY: shape.scaleY(),
+                        rotation: shape.rotation(),
+                    }),
+                }).then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                });
+                break;
+
+            case 'Ellipse':
+                await fetch('http://localhost:8080/ellipse', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id:this.layer.children[this.layer.children.length - 1].index,
+                        center:{
+                            x: shape.x(),
+                            y: shape.y(),
+                        },
+                        radiusX: shape.radiusX(),
+                        radiusY: shape.radiusY(),
+                        color: shape.fill(),
+                        scaleX: shape.scaleX(),
+                        scaleY: shape.scaleY(),
+                        rotation: shape.rotation(),
+                    }),
+                }).then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                });
+                break;
+            
+            case 'Square':
+                await fetch('http://localhost:8080/square', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id:this.layer.children[this.layer.children.length - 1].index,
+                        center:{
+                            x: shape.x(),
+                            y: shape.y(),
+                        },
+                        width: shape.width(),
+                        height: shape.height(),
+                        color: shape.fill(),
+                        scaleX: shape.scaleX(),
+                        scaleY: shape.scaleY(),
+                        rotation: shape.rotation(),
+                    }),
+                }).then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                });
+                break;
+            
+            case 'Rectangle':
+                await fetch('http://localhost:8080/rectangle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id:this.layer.children[this.layer.children.length - 1].index,
+                        center:{
+                            x: shape.x(),
+                            y: shape.y(),
+                        },
+                        width: shape.width(),
+                        height: shape.height(),
+                        color: shape.fill(),
+                        scaleX: shape.scaleX(),
+                        scaleY: shape.scaleY(),
+                        rotation: shape.rotation(),
+                    }),
+                }).then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                });
+                break;
+            
+            case 'Triangle':
+                await fetch('http://localhost:8080/triangle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id:this.layer.children[this.layer.children.length - 1].index,
+                        center:{
+                            x: shape.x(),
+                            y: shape.y(),
+                        },
+                        radius: shape.radius(),
+                        color: shape.fill(),
+                        scaleX: shape.scaleX(),
+                        scaleY: shape.scaleY(),
+                        rotation: shape.rotation(),
+                    }),
+                }).then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                });
+                break;
+            
+            case 'Line':
+                await fetch('http://localhost:8080/line', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id:this.layer.children[this.layer.children.length - 1].index,
+                        points: shape.points(),
+                        color: shape.stroke(),
+                        scaleX: shape.scaleX(),
+                        scaleY: shape.scaleY(),
+                        rotation: shape.rotation(),
+                    }),
+                }).then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                });
+                break;
+        }
         this.stage.on('mousemove', this.drawing);
     },
     stopDrawing(event){
