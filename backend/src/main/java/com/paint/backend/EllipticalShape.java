@@ -61,7 +61,7 @@ public class EllipticalShape implements Shape {
     }
 
     @Override
-    public Shape clone() {
+    public Shape clone(int newId) {
         EllipticalShape clone = new EllipticalShape();
         clone.setCenter(getCenter());
         return clone;

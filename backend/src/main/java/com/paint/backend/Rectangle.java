@@ -27,14 +27,14 @@ public class Rectangle implements Shape {
 
     @Override
     public void update(Map<String, Object> attributes) {
-        update((float) attributes.get("height"), (float) attributes.get("width"),
+        update((int) attributes.get("id"),(float) attributes.get("height"), (float) attributes.get("width"),
                 (float) attributes.get("x"), (float) attributes.get("y"),
                 (float) attributes.get("scaleX"), (float) attributes.get("scaleY"),
                 (float) attributes.get("rotation"), (String) attributes.get("color"));
 
     }
 
-    public void update(float height, float width, float x, float y,
+    public void update(int id,float height, float width, float x, float y,
             float scaleX, float scaleY, float rotation, String color) {
         setHeight(height);
         setWidth(width);
@@ -44,6 +44,7 @@ public class Rectangle implements Shape {
         setScaleY(scaleY);
         setRotation(rotation);
         setColor(color);
+        setId(id);
     }
 
     public float getHeight() {
@@ -111,9 +112,9 @@ public class Rectangle implements Shape {
     }
 
     @Override
-    public Shape clone() {
+    public Shape clone(int newId) {
         Rectangle clone = new Rectangle(Map.of("height", getHeight(), "width", getWidth(), "x", getX(), "y", getY(),
-                "scaleX", getScaleX(), "scaleY", getScaleY(), "rotation", getRotation(), "color", getColor()));
+                "scaleX", getScaleX(), "scaleY", getScaleY(), "rotation", getRotation(), "color", getColor(), "id", newId));
 
         return clone;
     }
