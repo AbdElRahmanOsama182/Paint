@@ -131,11 +131,11 @@ public class PolygonShape implements Shape {
     }
 
     // public static void main(String[] args) {
-    // Shape c = ShapeFactory.getInstance().create("circle", new Point(0, 0), 5);
-    // ShapeFactory.getInstance().clone(0);
-    // ArrayList<Shape> shapes = ShapeFactory.getInstance().getAllShapes();
+    // Shape c = ShapeManager.getInstance().create("circle", new Point(0, 0), 5);
+    // ShapeManager.getInstance().clone(0);
+    // ArrayList<Shape> shapes = ShapeManager.getInstance().getAllShapes();
     // for (Shape s : shapes) {
-    // System.out.println(ShapeFactory.getInstance().read(s.getId()));
+    // System.out.println(ShapeManager.getInstance().read(s.getId()));
     // }
     // }
 

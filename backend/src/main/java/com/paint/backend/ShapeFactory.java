@@ -6,63 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ShapeFactory {
-    private static ShapeFactory instance;
-    private static Map<Integer, Shape> shapes = new HashMap<>();
-
-    private ShapeFactory() {
-    }
-
-    public static synchronized ShapeFactory getInstance() {
-        if (instance == null) {
-            instance = new ShapeFactory();
-        }
-        return instance;
-    }
-
-    public static void addShape(Shape shape) {
-        shapes.put(shape.getId(), shape);
-    }
-
-    public static Shape update(int id, Map<String, Object> attributes) {
-
-        Shape shape = shapes.get(id);
-        if (shape != null) {
-            shape.update(attributes);
-        }
-        return shape;
-
-    }
-
-    public static void delete(int id) {
-        shapes.remove(id);
-    }
-
-    public static Shape clone(int id) {
-        Shape shape = shapes.get(id);
-        Shape clone = null;
-        if (shape != null) {
-            clone = shape.clone();
-        }
-        ShapeFactory.getInstance().addShape(clone);
-        return clone;
-    }
-
-    public static Map<String, Object> read(int id) {
-        Shape shape = shapes.get(id);
-        if (shape != null) {
-            return shape.read();
-        }
-        return null;
-    }
-
-    public static void clear() {
-        shapes.clear();
-    }
-
-    public static Map<Integer, Shape> getAllShapes() {
-        return shapes;
-    }
-
     public static Shape create(String shapeType, Map<String, Object> attributes) {
 
         if (shapeType == null) {
@@ -84,7 +27,8 @@ public class ShapeFactory {
         } else if (shapeType.equalsIgnoreCase("POLYGON")) {
             shape = new PolygonShape(attributes);
         }
-        ShapeFactory.getInstance().addShape(shape);
+        ShapeManager.getInstance().addShape(shape);
         return shape;
     }
+
 }
