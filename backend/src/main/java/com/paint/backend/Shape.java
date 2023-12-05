@@ -12,5 +12,5 @@ public interface Shape extends Cloneable {
 
     Map<String, Object> read();
 
-    Shape clone();
+    Shape clone(int newId);
 }
