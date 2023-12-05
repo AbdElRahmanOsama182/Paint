@@ -70,12 +70,17 @@ public class ShapeManager {
     }
 
     public static void undo() {
+        System.out.println("undo");
+        System.out.println(shapes);
+
         if (nextHistory > 0) {
             nextHistory--;
             shapes = history.get(nextHistory);
         }
     }
     public static void redo() {
+        System.out.println("redo");
+        System.out.println(shapes);
         if (nextHistory < history.size()-1) {
             nextHistory++;
             shapes = history.get(nextHistory);
@@ -83,6 +88,8 @@ public class ShapeManager {
     }
 
     public void saveRecord() {
+        System.out.println("saveRecord");
+        System.out.println(history);
         nextHistory++;
         history.add(new HashMap<>(shapes));
         if (nextHistory < history.size()-1) {
