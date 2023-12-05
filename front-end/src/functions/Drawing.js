@@ -71,7 +71,7 @@ const DrawingFunctions = {
 
         switch (this.drawingShape) {
             case 'Circle':
-                const radius = Math.max(Math.abs(pos.x - shape.x()), Math.abs(pos.y - shape.y()));
+                const radius = Math.sqrt(Math.pow(pos.x - shape.x(), 2) + Math.pow(pos.y - shape.y(), 2));
                 shape.radius(radius);
                 break;
             case 'Ellipse':
