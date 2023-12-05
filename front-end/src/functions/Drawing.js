@@ -43,9 +43,9 @@ const DrawingFunctions = {
                 });
             case 'Line':
                 return new Konva.Line({
-                    points: [pos.x, pos.y, pos.x+1, pos.y+1],
+                    points: [pos.x, pos.y, pos.x+10, pos.y+10],
                     stroke: 'black',
-                    strokeWidth: 2,
+                    strokeWidth: 1.5,
                 });
         }
     },
