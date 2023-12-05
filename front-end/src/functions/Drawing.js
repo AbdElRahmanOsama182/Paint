@@ -43,7 +43,7 @@ const DrawingFunctions = {
                 });
             case 'Line':
                 return new Konva.Line({
-                    points: [pos.x, pos.y, pos.x, pos.y],
+                    points: [pos.x, pos.y, pos.x+1, pos.y+1],
                     stroke: 'black',
                     strokeWidth: 2,
                 });
