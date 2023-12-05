@@ -90,23 +90,25 @@ public class PolygonShape implements Shape {
     }
 
     @Override
-    public Shape clone() {
+    public Shape clone(int newId) {
         PolygonShape clone = new PolygonShape(Map.of("center", getCenter(), "radius", getRadius(), "sides", getSides(),
-                "color", getColor(), "scaleX", getScaleX(), "scaleY", getScaleY(), "rotation", getRotation()));
+                "color", getColor(), "scaleX", getScaleX(), "scaleY", getScaleY(), "rotation", getRotation(), "id", newId));
 
         return clone;
     }
 
     @Override
     public void update(Map<String, Object> attributes) {
-        update((Point2D.Float) attributes.get("center"), (float) attributes.get("radius"),
+        update((int) attributes.get("id") ,(Point2D.Float) attributes.get("center"), (float) attributes.get("radius"),
+
                 (int) attributes.get("sides"),
                 (String) attributes.get("color"), (float) attributes.get("scaleX"), (float) attributes.get("scaleY"),
                 (float) attributes.get("rotation"));
 
     }
 
-    public void update(Point2D.Float center, float radius, int sides, String color, float scaleX, float scaleY,
+    public void update(int id,Point2D.Float center, float radius, int sides, String color, float scaleX, float scaleY,
+
             float rotation) {
         setCenter(center);
         setRadius(radius);
@@ -115,6 +117,8 @@ public class PolygonShape implements Shape {
         setScaleX(scaleX);
         setScaleY(scaleY);
         setRotation(rotation);
+        setId(id);
+
     }
 
     @Override
@@ -131,11 +135,12 @@ public class PolygonShape implements Shape {
     }
 
     // public static void main(String[] args) {
-    // Shape c = ShapeFactory.getInstance().create("circle", new Point(0, 0), 5);
-    // ShapeFactory.getInstance().clone(0);
-    // ArrayList<Shape> shapes = ShapeFactory.getInstance().getAllShapes();
+    // Shape c = ShapeManager.getInstance().create("circle", new Point(0, 0), 5);
+    // ShapeManager.getInstance().clone(0);
+    // ArrayList<Shape> shapes = ShapeManager.getInstance().getAllShapes();
     // for (Shape s : shapes) {
-    // System.out.println(ShapeFactory.getInstance().read(s.getId()));
+    // System.out.println(ShapeManager.getInstance().read(s.getId()));
+
     // }
     // }
 
