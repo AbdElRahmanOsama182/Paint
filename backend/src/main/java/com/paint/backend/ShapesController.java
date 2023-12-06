@@ -1,16 +1,27 @@
 package com.paint.backend;
 
+import java.util.List;
 import java.util.Map;
 import java.awt.Point;
+import java.beans.XMLEncoder;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import org.springframework.http.MediaType;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 @CrossOrigin(origins = { "http://localhost:8081" })
@@ -91,8 +102,8 @@ public class ShapesController {
     }
 
     @PostMapping("/shape/{id}/copy")
-    public Map<String, Object> copy(@PathVariable("id") String id, @RequestBody Map<String,Integer> payload) {
-        return ShapeManager.getInstance().clone(Integer.parseInt(id),(Integer)payload.get("newId")).read();
+    public Map<String, Object> copy(@PathVariable("id") String id, @RequestBody Map<String, Integer> payload) {
+        return ShapeManager.getInstance().clone(Integer.parseInt(id), (Integer) payload.get("newId")).read();
     }
 
     @PostMapping("/layer/record")
@@ -111,5 +122,51 @@ public class ShapesController {
         System.out.println(ShapeManager.getInstance().getAllShapes());
     }
 
-    
+    @PostMapping("/save/{extension}")
+    public ResponseEntity<String> save(@PathVariable("extension") String extension) {
+        return ShapeManager.getInstance().save(extension);
+    }
+
+    @PostMapping("/saveJson")
+    public ResponseEntity<String> getAllShapes() {
+        try {
+            // Assuming ShapeManager.getInstance().getAllShapes() returns a List<Shape>
+            Map<Integer, Shape> shapes = (Map<Integer, Shape>) ShapeManager.getInstance().getAllShapes();
+
+            // Convert the list of shapes to JSON
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonShapes = objectMapper.writeValueAsString(shapes);
+
+            // Return the JSON string
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(jsonShapes);
+        } catch (JsonProcessingException e) {
+            // Handle JSON processing exception and return an error response if needed
+            return ResponseEntity.status(500).body("Error processing JSON"); // or return an error response
+        }
+    }
+
+    @PostMapping("/saveXml")
+    public ResponseEntity<String> saveXml() {
+        try {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            XMLEncoder encoder = new XMLEncoder(bos);
+
+            // Assuming getAllShapes() returns the data you want to save
+            encoder.writeObject(ShapeManager.getInstance().getAllShapes());
+
+            encoder.close();
+            bos.close();
+
+            String xmlContent = bos.toString("UTF-8");
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_XML)
+                    .body(xmlContent);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error saving XML");
+        }
+    }
 }
