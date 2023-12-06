@@ -253,15 +253,20 @@ const DrawingFunctions = {
     stopDrawing(event) {
         this.stage.off('mousemove', this.drawing);
         this.isDrawing = false;
+        this.setResize(false);
         this.saveRecord();
 
     },
     async drawing(event) {
-        if (!this.isDrawing) return;
+        if (!this.isDrawing && !this.isResizing) return;
 
+        var index = this.layer.children.length - 1;
+        if(this.isResizing){
+            index = this.clickedShapeIndex;
+        }
         const pos = this.stage.getPointerPosition();
-        const shape = this.layer.children[this.layer.children.length - 1];
-
+        
+        const shape = this.layer.children[index];
         switch (this.drawingShape) {
             case 'Circle':
                 const radius = Math.sqrt(Math.pow(pos.x - shape.x(), 2) + Math.pow(pos.y - shape.y(), 2));

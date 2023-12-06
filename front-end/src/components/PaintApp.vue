@@ -17,6 +17,8 @@
                 <button @click="redo()"> redo </button>
                 <button @click="deleteShape" :style="{ backgroundColor: deleteColor }"> delete </button>
                 <button @click="cloneShape()" :style="{ backgroundColor: cloneColor }">clone</button>
+                <button @click="resizeShape" :style="{ backgroundColor: resizeColor }">resize</button>
+                <button class="alien" @dblclick="clearAll">👽</button>
             </div>
             <div class="shapes">
                 <button @click="drawShape('Circle')"> ◯ </button>
@@ -27,7 +29,10 @@
                 <button @click="drawShape('Line')"> / </button>
             </div>
             <div class="curr">
-                <button class="customcolor" @dblclick="showPicker" :style="{ backgroundColor: currentColor }"></button>
+                <button class="customcolor" @dblclick="showPicker" :style="{ backgroundColor: currentColor }">
+                    <p v-if="isPopupVisible">▿</p>
+                    <p v-else>▵</p>
+                </button>
 
                 <div id="PopUp" class="popup-content">
                     <v-color-picker @update:modelValue="changeColor" @mouseleave="closePopup" color="#e0dfdf">
@@ -91,6 +96,9 @@ export default {
             deleteColor: 'white',
             showLoadDropdown: false,
             showSaveDropdown: false,
+            isResizing: false,
+            resizeColor: 'white',
+            clickedShapeIndex: null,
         };
     },
     mounted() {
@@ -386,7 +394,8 @@ export default {
         Action() {
             this.showLoadDropdown = false;
             this.showSaveDropdown = false;
-            if (this.isDrawing) this.startDrawing();
+            if (this.isResizing) this.checkShape();
+            else if (this.isDrawing) this.startDrawing();
             else this.selectWindow();
         },
         selectWindow() {
@@ -459,6 +468,7 @@ export default {
             }
         },
         drawShape(shape) {
+            this.setResize(false);
             this.drawingShape = shape;
             this.isDrawing = true;
             console.log(this.drawingShape);
@@ -489,25 +499,24 @@ export default {
                 this.showPicker();
             }
         },
+        resizeShape(){
+            this.setDelete(0);
+            this.setClone(0);
+            this.setResize(!this.isResizing);  
+        },
         cloneShape() {
-            this.isClonable = !this.isClonable;
-            if (this.isDeletable) {
-                this.isDeletable = !this.isDeletable;
-                this.deleteColor = this.activeColorfn(this.isDeletable);
-            }
-            this.cloneColor = this.activeColorfn(this.isClonable);
+            this.setDelete(0);
+            this.setResize(0);
+            this.setClone(!this.isClonable);
         },
         deleteShape() {
-            this.isDeletable = !this.isDeletable;
-            if (this.isClonable) {
-                this.isClonable = !this.isClonable;
-                this.cloneColor = this.activeColorfn(this.isClonable);
-            }
-            this.deleteColor = this.activeColorfn(this.isDeletable);
+            this.setDelete(!this.isDeletable);
+            this.setClone(0);
+            this.setResize(0);
         },
         activeColorfn(bool) {
             if (bool) {
-                return 'blue';
+                return 'red';
             }
             else {
                 return 'white';
@@ -542,6 +551,47 @@ export default {
             if (event.keyCode == 46) {
                 this.deleteSelectedShapes();
             }
+        },
+        checkShape(){
+            if(this.isResizing){
+                const pos = this.stage.getPointerPosition();
+                const shape = this.stage.getIntersection(pos);
+                console.log(shape);
+                if(shape) {
+                    this.drawingShape = this.shapeType(shape);
+                    this.clickedShapeIndex = shape.index;
+                }
+            }
+            this.stage.on('mousemove', this.drawing);
+        },
+        setResize(value){
+            this.isResizing = value;
+            this.resizeColor = this.activeColorfn(this.isResizing);
+            this.drawingShape = null;
+            this.clickedShapeIndex = null;
+        },
+        setDelete(value){
+            this.isDeletable = value;
+            this.deleteColor = this.activeColorfn(this.isDeletable);
+        },
+        setClone(value){
+            this.isClonable = value;
+            this.cloneColor = this.activeColorfn(this.isClonable);
+        },
+        shapeType(shape){
+            var name = shape.getClassName();
+            if(name == "RegularPolygon"){
+                name = "Triangle";
+            }
+            else if(name == "Rect"){
+                if(shape.getAttr('height') == shape.getAttr('width')){
+                    name = "Square";
+                }
+                else{
+                    name = "Rectangle";
+                }
+            }
+            return name;
         },
         ...HistoryFunctions,
         ...DrawingFunctions,
