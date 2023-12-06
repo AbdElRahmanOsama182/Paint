@@ -3,9 +3,17 @@
         <div class="panel" v-bind:style="{ left: `${x}px`, top: `${y}px` }" @mousedown="startDrag" @mousemove="dragging"
             @mouseup="stopDrag" @mouseleave="stopDrag">
             <div class="commands">
-                <button> load </button>
+                <button @click="showLoadOptions">Load</button>
+                <div v-if="showLoadDropdown" class="dropdown">
+                  <button @click="loadFile('json')">Load JSON</button>
+                  <button @click="loadFile('xml')">Load XML</button>
+                </div>
                 <button @click="undo()"> undo </button>
-                <button> save</button>
+                <button @click="showSaveOptions">Save</button>
+                <div v-if="showSaveDropdown" class="dropdown">
+                  <button @click="saveFile('json')">Save As JSON</button>
+                  <button @click="saveFile('xml')">Save As XML</button>
+                </div>
                 <button @click="redo()"> redo </button>
                 <button @click="deleteShape" :style="{ backgroundColor: deleteColor }"> delete </button>
                 <button @click="cloneShape()" :style="{ backgroundColor: cloneColor }">clone</button>
@@ -53,6 +61,7 @@
 <script>
 import Konva from 'konva';
 import { Stage, Layer, Rect, Circle, Ellipse, Line } from 'konva';
+import axios from 'axios';
 import { DrawingFunctions } from '../functions/Drawing.js';
 import { HistoryFunctions } from '../functions/History.js';
 export default {
@@ -80,6 +89,8 @@ export default {
             isClonable: false,
             cloneColor: 'white',
             deleteColor: 'white',
+            showLoadDropdown: false,
+            showSaveDropdown: false,
         };
     },
     mounted() {
@@ -254,7 +265,102 @@ export default {
     },
 
     methods: {
+        showSaveOptions() {
+            this.showSaveDropdown = !this.showSaveDropdown;
+            if (this.showLoadDropdown) this.showLoadDropdown = false;
+        },
+        async saveFile(extension) {
+            try {
+                let options;
+                if (extension === 'json') {
+                    options = {
+                        types: [
+                            {
+                                description: 'JSON Files',
+                                accept: { 'application/json': ['.json'] },
+                            },
+                        ],
+                    };
+                } else  {
+                    options = {
+                        types: [
+                            {
+                                description: 'XML Files',
+                                accept: { 'application/xml': ['.xml'] },
+                            },
+                        ],
+                    };
+                };
+                const fileHandle = await window.showSaveFilePicker(options);
+                const fileName = fileHandle.name.endsWith(extension)
+                    ? fileHandle.name
+                    : fileHandle.name + extension;
+                const response = await fetch(`http://localhost:8080/save/${extension}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json', // Set the content type
+                    },
+                });
+
+                // Get the file content from the response
+                const fileContent = await response.blob();
+                console.log(fileContent);
+                // Write the file content to the user-selected file
+                const writable = await fileHandle.createWritable();
+                await writable.write(fileContent);
+                await writable.close();
+
+                console.log('File saved successfully!');
+                this.showSaveDropdown = false;
+            } catch (error) {
+                this.showSaveDropdown = false;
+                console.error('Error saving file:', error);
+            }
+        },
+        showLoadOptions() {
+            this.showLoadDropdown = !this.showLoadDropdown;
+            if (this.showSaveDropdown) this.showSaveDropdown = false;
+        },
+        async loadFile(extension) {
+            try {
+                let options;
+                if (extension === 'json') {
+                    options = {
+                        types: [
+                        {
+                            description: 'JSON Files',
+                            accept: { 'application/json': ['.json'] },
+                        },
+                        ],
+                    };
+                } else  {
+                    options = {
+                        types: [
+                        {
+                            description: 'XML Files',
+                            accept: { 'application/xml': ['.xml'] },
+                        },
+                        ],
+                    };
+                };
+                const [fileHandle] = await window.showOpenFilePicker(options);
+                const file = await fileHandle.getFile();
+                const contents = await file.text();
+                if (!file.name.endsWith(extension)) {
+                    console.error('Invalid file format selected.');
+                    this.showLoadDropdown = false;
+                    return;
+                }
+                console.log('File loaded successfully:', contents);
+                this.showLoadDropdown = false; 
+            } catch (error) {
+                this.showLoadDropdown = false;
+                console.error('Error loading file:', error);
+            }
+        },
         Action() {
+            this.showLoadDropdown = false;
+            this.showSaveDropdown = false;
             if (this.isDrawing) this.startDrawing();
             else this.selectWindow();
         },
