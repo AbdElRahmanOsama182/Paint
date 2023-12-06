@@ -22,7 +22,7 @@ public class Triangle extends PolygonShape {
     public Shape clone() {
         Triangle clone = new Triangle(Map.of("center", getCenter(), "radius", getRadius(),
                 "rotation", getRotation(), "color", getColor(), "scaleX", getScaleX(),
-                "scaleY", getScaleY(), "sides", getSides()));
+                "scaleY", getScaleY(), "sides", 3));
 
         return clone;
     }
@@ -31,13 +31,14 @@ public class Triangle extends PolygonShape {
     public Map<String, Object> read() {
         return Map.of(
                 "id", getId(),
+                "type", "polygon",
                 "center", getCenter(),
                 "radius", getRadius(),
                 "scaleX", getScaleX(),
                 "scaleY", getScaleY(),
                 "rotation", getRotation(),
                 "color", getColor(),
-                "sides", getSides());
+                "sides", 3);
     }
 
 }

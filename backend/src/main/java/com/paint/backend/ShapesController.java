@@ -1,5 +1,6 @@
 package com.paint.backend;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.awt.Point;
@@ -8,6 +9,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
+
 import org.springframework.http.MediaType;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -127,46 +130,9 @@ public class ShapesController {
         return ShapeManager.getInstance().save(extension);
     }
 
-    @PostMapping("/saveJson")
-    public ResponseEntity<String> getAllShapes() {
-        try {
-            // Assuming ShapeManager.getInstance().getAllShapes() returns a List<Shape>
-            Map<Integer, Shape> shapes = (Map<Integer, Shape>) ShapeManager.getInstance().getAllShapes();
-
-            // Convert the list of shapes to JSON
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonShapes = objectMapper.writeValueAsString(shapes);
-
-            // Return the JSON string
-            return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(jsonShapes);
-        } catch (JsonProcessingException e) {
-            // Handle JSON processing exception and return an error response if needed
-            return ResponseEntity.status(500).body("Error processing JSON"); // or return an error response
-        }
-    }
-
-    @PostMapping("/saveXml")
-    public ResponseEntity<String> saveXml() {
-        try {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            XMLEncoder encoder = new XMLEncoder(bos);
-
-            // Assuming getAllShapes() returns the data you want to save
-            encoder.writeObject(ShapeManager.getInstance().getAllShapes());
-
-            encoder.close();
-            bos.close();
-
-            String xmlContent = bos.toString("UTF-8");
-
-            return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_XML)
-                    .body(xmlContent);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Error saving XML");
-        }
+    @PostMapping("/load/{extension}")
+    public ResponseEntity<String> load(@PathVariable("extension") String extension,
+            @RequestBody String fileContents) {
+        return ShapeManager.getInstance().load(extension, fileContents);
     }
 }
