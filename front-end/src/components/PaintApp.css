@@ -67,6 +67,11 @@ button{
     height: 30px;
 }
 
+.background{
+    grid-column: span 2;
+    width: auto;
+}
+
 .colors button {
 width: 30px;
 border-radius: 50px;

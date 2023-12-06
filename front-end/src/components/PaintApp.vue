@@ -18,7 +18,8 @@
                 <button @click="deleteShape" :style="{ backgroundColor: deleteColor }"> delete </button>
                 <button @click="cloneShape()" :style="{ backgroundColor: cloneColor }">clone</button>
                 <button @click="resizeShape" :style="{ backgroundColor: resizeColor }">resize</button>
-                <button class="alien" @dblclick="clearAll">👽</button>
+                <button class="background" @click="canvaColor" :style="{ backgroundColor: tempColor }">background</button>
+                <button class="alien" @dblclick="">👽</button>
             </div>
             <div class="shapes">
                 <button @click="drawShape('Circle')"> ◯ </button>
@@ -29,7 +30,7 @@
                 <button @click="drawShape('Line')"> / </button>
             </div>
             <div class="curr">
-                <button class="customcolor" @dblclick="showPicker" :style="{ backgroundColor: currentColor }">
+                <button class="customcolor" @click="colorShape" @dblclick="showPicker" :style="{ backgroundColor: currentColor }">
                     <p v-if="isPopupVisible">▿</p>
                     <p v-else>▵</p>
                 </button>
@@ -41,21 +42,21 @@
             </div>
 
             <div class="colors">
-                <button @click="currentColor = 'black'"> </button>
-                <button @click="currentColor = 'white'"> </button>
-                <button @click="currentColor = 'cyan'"> </button>
-                <button @click="currentColor = 'blue'"> </button>
-                <button @click="currentColor = 'yellow'"> </button>
-                <button @click="currentColor = 'green'"> </button>
-                <button @click="currentColor = 'magenta'"> </button>
-                <button @click="currentColor = 'red'"> </button>
+                <button @dblclick="colorShape" @click="currentColor = 'black'"> </button>
+                <button @dblclick="colorShape" @click="currentColor = 'white'"> </button>
+                <button @dblclick="colorShape" @click="currentColor = 'cyan'"> </button>
+                <button @dblclick="colorShape" @click="currentColor = 'blue'"> </button>
+                <button @dblclick="colorShape" @click="currentColor = 'yellow'"> </button>
+                <button @dblclick="colorShape" @click="currentColor = 'green'"> </button>
+                <button @dblclick="colorShape" @click="currentColor = 'magenta'"> </button>
+                <button @dblclick="colorShape" @click="currentColor = 'red'"> </button>
             </div>
 
         </div>
 
         <div class="wrapper">
             <div @dblclick="selectShape" @mousedown="Action" @mouseup="stopDrawing" class="canvas"
-                :style="{ width: `${CW}px`, height: `${CH}px` }">
+                :style="{ width: `${CW}px`, height: `${CH}px`, backgroundColor: canvaBackgrounColor}">
 
             </div>
         </div>
@@ -99,6 +100,8 @@ export default {
             isResizing: false,
             resizeColor: 'white',
             clickedShapeIndex: null,
+            canvaBackgrounColor: "white",
+            tempColor: 'white',
         };
     },
     mounted() {
@@ -491,7 +494,7 @@ export default {
         },
         activeColorfn(bool) {
             if (bool) {
-                return 'red';
+                return 'rgba(35,209,20,1)';
             }
             else {
                 return 'white';
@@ -552,6 +555,17 @@ export default {
         setClone(value){
             this.isClonable = value;
             this.cloneColor = this.activeColorfn(this.isClonable);
+        },
+        colorShape(){
+            if (this.transformer) {
+                this.transformer.nodes().forEach((shape) => shape.fill(this.currentColor));
+                this.transformer.nodes([]);
+            }
+        },
+        canvaColor(){
+            this.tempColor = this.currentColor;
+            this.canvaBackgrounColor = this.currentColor;
+            this.tempColor = 'white';
         },
         shapeType(shape){
             var name = shape.getClassName();
