@@ -1,8 +1,8 @@
-body{
+body {
     transition: all 0.5s ease-out;
 }
 
-.wrapper{
+.wrapper {
     position: absolute;
     height: 100vh;
     width: 100vw;
@@ -11,13 +11,15 @@ body{
     justify-content: center;
     align-items: center;
 }
-.canvas{
+
+.canvas {
     background-color: white;
     border-radius: 10px;
     border: 0px solid;
     box-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.1);
 }
-.panel{
+
+.panel {
     position: absolute;
     display: flex;
     z-index: 5;
@@ -31,26 +33,30 @@ body{
     font-size: small;
 }
 
-button{
+button {
     cursor: pointer;
     border: 0px;
     background: white;
     border-radius: 5px;
     transition: all 100ms ease-out;
 }
-button:hover{
+
+button:hover {
     opacity: 70%;
 }
-button:active{
+
+button:active {
     scale: 105%;
 }
+
 .shapes {
     display: grid;
     grid-template-rows: repeat(2, 1fr);
     gap: 5px;
     grid-auto-flow: column;
-    
+
 }
+
 .colors {
     display: grid;
     grid-template-rows: repeat(2, 1fr);
@@ -66,49 +72,74 @@ button:active{
     grid-auto-flow: column;
 }
 
-button{
+button {
     width: 50px;
     height: 30px;
 }
 
 .colors button {
-width: 30px;
-border-radius: 50px;
-border: 0;
-box-shadow: inset 2px 2px 0px rgba(0, 0, 0, 0.2);
+    width: 30px;
+    border-radius: 50px;
+    border: 0;
+    box-shadow: inset 2px 2px 0px rgba(0, 0, 0, 0.2);
 }
-.colors button:nth-child(1) {background-color: black;}
-.colors button:nth-child(2) {background-color: white;}
-.colors button:nth-child(3) {background-color: cyan;}
-.colors button:nth-child(4) {background-color: blue;}
-.colors button:nth-child(5) {background-color: yellow;}
-.colors button:nth-child(6) {background-color: green;}
-.colors button:nth-child(7) {background-color: magenta;}
-.colors button:nth-child(8) {background-color: red;}
 
-.customcolor{
-height: 100%;
-background-color: grey;
-color: rgb(196, 196, 196);
-grid-row: span 2;
-grid-column: span 2;
+.colors button:nth-child(1) {
+    background-color: black;
 }
+
+.colors button:nth-child(2) {
+    background-color: white;
+}
+
+.colors button:nth-child(3) {
+    background-color: cyan;
+}
+
+.colors button:nth-child(4) {
+    background-color: blue;
+}
+
+.colors button:nth-child(5) {
+    background-color: yellow;
+}
+
+.colors button:nth-child(6) {
+    background-color: green;
+}
+
+.colors button:nth-child(7) {
+    background-color: magenta;
+}
+
+.colors button:nth-child(8) {
+    background-color: red;
+}
+
+.customcolor {
+    height: 100%;
+    background-color: grey;
+    color: rgb(196, 196, 196);
+    grid-row: span 2;
+    grid-column: span 2;
+}
+
 .popup-content {
-display: none;
-position: absolute;
-bottom: 50px;
-min-width: 160px;
-box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-z-index: 6;
-cursor: auto;
+    display: none;
+    position: absolute;
+    bottom: 50px;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 6;
+    cursor: auto;
 }
 
 .showColorPicker {
-display: block;
-margin-bottom: 20px;
+    display: block;
+    margin-bottom: 20px;
 }
 
-.newPanel{
+.newPanel {
     position: fixed;
     background-color: #fff;
     padding: 50px;
@@ -123,7 +154,7 @@ margin-bottom: 20px;
     align-items: center;
 }
 
-.newPanel input{
+.newPanel input {
     display: grid;
     width: 100%;
     margin-bottom: 10px;
@@ -134,7 +165,8 @@ margin-bottom: 20px;
     font-size: 16px;
     box-sizing: border-box;
 }
-.newPanel button{
+
+.newPanel button {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -147,7 +179,7 @@ margin-bottom: 20px;
     border-radius: 5px;
 }
 
-.newWrapper{
+.newWrapper {
     position: absolute;
     height: 100vh;
     width: 100vw;
@@ -156,6 +188,8 @@ margin-bottom: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
-    top: 0px;left: 0px;bottom: 0px;right: 0px;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    right: 0px;
 }
-
