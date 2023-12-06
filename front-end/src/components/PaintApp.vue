@@ -18,7 +18,7 @@
                 <button @click="deleteShape" :style="{ backgroundColor: deleteColor }"> delete </button>
                 <button @click="cloneShape()" :style="{ backgroundColor: cloneColor }">clone</button>
                 <button @click="resizeShape" :style="{ backgroundColor: resizeColor }">resize</button>
-                <button>👽</button>
+                <button class="alien" @dblclick="clearAll">👽</button>
             </div>
             <div class="shapes">
                 <button @click="drawShape('Circle')"> ◯ </button>
