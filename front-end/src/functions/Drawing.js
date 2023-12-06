@@ -99,4 +99,5 @@ const DrawingFunctions = {
         this.layer.batchDraw();
     },
 }
-export { DrawingFunctions};
+export { DrawingFunctions };
+

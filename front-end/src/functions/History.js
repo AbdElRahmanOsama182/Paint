@@ -21,6 +21,7 @@ const HistoryFunctions = {
         }
         this.transformer = this.layer.children[0]
         this.selectionRectangle=this.layer.children[1]
+        this.selectionRectangle.visible(false)
         this.layer.draw()
         console.log("new layer", this.layer)
         this.layer.batchDraw()
@@ -59,4 +60,4 @@ const HistoryFunctions = {
     },
 }
 
-export { HistoryFunctions }
+export { HistoryFunctions };

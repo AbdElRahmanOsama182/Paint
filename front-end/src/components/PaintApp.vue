@@ -9,6 +9,7 @@
                 <button @click="redo()"> redo </button>
                 <button @click="deleteShape" :style="{backgroundColor: deleteColor}"> delete </button>
                 <button @click="cloneShape()" :style="{backgroundColor: cloneColor}">clone</button>
+                <button @click="toggleNewPanel">New</button>
             </div>
             <div class="shapes">
                 <button @click="drawShape('Circle')"> ◯ </button>
@@ -19,7 +20,7 @@
                 <button @click="drawShape('Line')"> / </button>
             </div>
             <div class="curr">
-                <button class="customcolor" @dblclick="showPicker" :style="{ backgroundColor: currentColor }"></button>
+                <button class="customcolor" @click="changeShapeColor(currentColor)" @dblclick="showPicker" :style="{ backgroundColor: currentColor }"></button>
 
                 <div id="PopUp" class="popup-content">
                     <v-color-picker @update:modelValue="changeColor" @mouseleave="closePopup" color="#e0dfdf">
@@ -28,14 +29,14 @@
             </div>
 
             <div class="colors">
-                <button @click="currentColor='black'"> </button>
-                <button @click="currentColor='white'"> </button>
-                <button @click="currentColor='cyan'"> </button>
-                <button @click="currentColor='blue'"> </button>
-                <button @click="currentColor='yellow'"> </button>
-                <button @click="currentColor='green'"> </button>
-                <button @click="currentColor='magenta'"> </button>
-                <button @click="currentColor='red'"> </button>
+                <button @click="changeShapeColor('black')"> </button>
+                <button @click="changeShapeColor('white')"> </button>
+                <button @click="changeShapeColor('cyan')"> </button>
+                <button @click="changeShapeColor('blue')"> </button>
+                <button @click="changeShapeColor('yellow')"> </button>
+                <button @click="changeShapeColor('green')"> </button>
+                <button @click="changeShapeColor('magenta')"> </button>
+                <button @click="changeShapeColor('red')"> </button>
             </div>
 
         </div>
@@ -43,16 +44,20 @@
         <div class="wrapper">
             <div @dblclick="selectShape" @mousedown="Action" @mouseup="stopDrawing" class="canvas"
                 :style="{ width: `${CW}px`, height: `${CH}px` }">
-
             </div>
         </div>
-
+        <div v-if="showResizePanel" @click.self="toggleNewPanel" class="newWrapper">
+            <div class="newPanel">
+                <input type="width" v-model="inputX" />
+                <input type="hight" v-model="inputY"/>
+                <button @click="newCanvas"> Create </button>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
 import Konva from 'konva';
-import { Stage, Layer, Rect, Circle, Ellipse, Line } from 'konva';
 import { DrawingFunctions } from '../functions/Drawing.js';
 import { HistoryFunctions } from '../functions/History.js';
 export default {
@@ -73,16 +78,25 @@ export default {
             transformer: null,
             selectionRectangle: null,
             isPopupVisible: false,
+            showResizePanel: false,
             currentColor: 'grey',
             history: [],
             historyIndex: 0,
+            clonedshape: null,
             isDeletable: false,
             isClonable: false,
             cloneColor: 'white',
             deleteColor: 'white',
+            inputX: 1200,
+            inputY: 600,
         };
     },
     mounted() {
+        this.CW = localStorage.getItem('canvasWidth') || 1200;
+        this.CH = localStorage.getItem('canvasHeight') || 600;
+        localStorage.setItem('canvasWidth', 1200);
+        localStorage.setItem('canvasHeight', 600);
+
         this.stage = new Konva.Stage({
             container: '.canvas',
             width: this.CW,
@@ -115,6 +129,9 @@ export default {
         this.layer.add(this.selectionRectangle);
         this.history.push(this.layer.clone());
         document.addEventListener('keyup', this.delKey);
+        document.addEventListener('keyup', this.cloneKey);
+        document.addEventListener('keyup', this.undoKey);
+        document.addEventListener('keyup', this.redoKey);
     },
 
     beforeDestroy() {
@@ -171,7 +188,7 @@ export default {
                 if(this.isDeletable){
                     this.deleteSelectedShapes();
                 }
-                if(this.isClonable){
+                else if(this.isClonable){
                     this.cloneSelectedShapes();
                 }
             });
@@ -187,6 +204,9 @@ export default {
                 this.moveSelectedShapes();
                 if(this.isDeletable){
                     this.deleteSelectedShapes();
+                }
+                else if(this.isClonable){
+                    this.cloneSelectedShapes();
                 }
             }
             else {
@@ -225,29 +245,39 @@ export default {
                 this.showPicker();
             }
         },
+        toggleNewPanel() {
+            this.showResizePanel = !this.showResizePanel;
+        },
+        newCanvas() {
+            if (this.inputX > 100 && this.inputY > 100 && this.inputX < 2000 && this.inputY < 2000){
+                localStorage.setItem('canvasWidth', this.inputX);
+                localStorage.setItem('canvasHeight', this.inputY);
+                location.reload();
+            }
+            else{
+                alert("Please enter a valid number between 100 and 2000");
+                this.inputX = this.CW;
+                this.inputY = this.CH;
+            }
+            this.toggleNewPanel();
+        },
         cloneShape(){
             this.isClonable = !this.isClonable;
             if(this.isDeletable){
                 this.isDeletable = !this.isDeletable;
-                this.deleteColor=this.activeColorfn(this.isDeletable);
+                this.deleteColor='white';
             }
-            this.cloneColor=this.activeColorfn(this.isClonable);
+            if(this.isClonable) this.cloneColor='green';
+            else this.cloneColor='white';
         },
         deleteShape(){
             this.isDeletable = !this.isDeletable;
             if(this.isClonable){
                 this.isClonable = !this.isClonable;
-                this.cloneColor=this.activeColorfn(this.isClonable);
+                this.cloneColor='white';
             }
-            this.deleteColor=this.activeColorfn(this.isDeletable);
-        },
-        activeColorfn(bool){
-            if(bool){
-                return 'blue';
-            }
-            else{
-                return 'white';
-            }
+            if (this.isDeletable) this.deleteColor='red';
+            else this.deleteColor='white';
         },
         emptyTransformer(){
             if(this.transformer){
@@ -258,15 +288,14 @@ export default {
         deleteSelectedShapes(){
             if(this.transformer){
                 this.transformer.nodes().forEach((shape) => shape.destroy());
-                this.transformer.nodes([]);
+                this.emptyTransformer();
             }
         },
         cloneSelectedShapes(){
             if(this.transformer){
-                this.transformer.nodes().forEach((shape) => 
-                this.layer.add(shape.clone().offsetX(100).offsetY(100)),
-
-                this.transformer.nodes([]));
+                this.transformer.nodes().forEach((shape) =>
+                this.layer.add(shape.clone().offsetX(100).offsetY(100)));
+                this.emptyTransformer();
             }
         },
         moveSelectedShapes(){
@@ -274,11 +303,53 @@ export default {
                 this.transformer.nodes().forEach((shape) => shape.draggable(true));
             }
         },
+        changeShapeColor(color) {
+            this.currentColor = color;
+            if (this.transformer.nodes().length > 0) {
+                this.transformer.nodes().forEach((shape) => {
+                    if(shape instanceof Konva.Line) {
+                        shape.stroke(color);
+                    } else {
+                        shape.fill(color);
+                    }
+                        });
+                this.layer.draw();
+            }
+        },
+        cloneSelected() {
+            if (this.transformer.nodes().length > 0) {
+                this.transformer.nodes().forEach((shape) => {
+                    shape.fill(color);
+                });
+                this.layer.draw();
+            }
+        },
+        cloneKey(event){
+            if(event.shiftKey && event.keyCode == 68){
+                this.cloneSelectedShapes();
+                console.log("cloned");
+            }
+        },
         delKey(event){
             if(event.keyCode == 46){
                 this.deleteSelectedShapes();
+                console.log("deleted");
             }
         },
+        undoKey(event) {
+            if (event.ctrlKey && event.keyCode == 90) {
+                this.undo();
+                console.log("undone");
+            }
+        },
+
+        redoKey(event) {
+            if (event.ctrlKey && event.shiftKey && event.keyCode == 90) {
+                this.redo();
+                console.log("redone");
+            }
+        },
+
         ...HistoryFunctions,
         ...DrawingFunctions,
     },
