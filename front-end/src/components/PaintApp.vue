@@ -352,7 +352,32 @@ export default {
                     return;
                 }
                 console.log('File loaded successfully:', contents);
-                this.showLoadDropdown = false; 
+                const response = await fetch(`http://localhost:8080/load/${extension}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': extension === 'json' ? 'application/json' : 'application/xml',
+                    },
+                    body: contents ,
+                });
+                if (!response.ok) {
+                    console.error('Error loading file:', response);
+                    this.showLoadDropdown = false;
+                    return;
+                }
+                const newShapes = await response.json();
+                const shapesArray = Object.values(newShapes);
+                console.log(shapesArray);
+                this.emptyTransformer();
+                this.layer.children.forEach((shape) => {
+                    if (shape.index !== 0 && shape.index !== 1) shape.destroy();
+                });
+                shapesArray.forEach((shape) => {
+                    this.createFromJson(shape);
+                });
+                console.log(this.layer.children);
+                this.layer.draw();
+                this.saveRecord();
+                this.showLoadDropdown = false;
             } catch (error) {
                 this.showLoadDropdown = false;
                 console.error('Error loading file:', error);

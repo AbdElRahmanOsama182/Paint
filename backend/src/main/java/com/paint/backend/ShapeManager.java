@@ -7,19 +7,26 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
-
+import com.fasterxml.jackson.core.type.TypeReference;
 import java.awt.Point;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 public class ShapeManager {
     private static ShapeManager instance;
@@ -75,6 +82,8 @@ public class ShapeManager {
 
     public static void clear() {
         shapes.clear();
+        shapes = new HashMap<>();
+        history.clear();
     }
 
     public static Map<Integer, Shape> getAllShapes() {
@@ -126,15 +135,10 @@ public class ShapeManager {
         try {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             XMLEncoder encoder = new XMLEncoder(bos);
-
-            // Assuming getAllShapes() returns the data you want to save
             encoder.writeObject(ShapeManager.getInstance().getAllShapes());
-
             encoder.close();
             bos.close();
-
             String xmlContent = bos.toString("UTF-8");
-
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_XML)
                     .body(xmlContent);
@@ -146,20 +150,79 @@ public class ShapeManager {
 
     public ResponseEntity<String> saveJson() {
         try {
-            // Assuming ShapeManager.getInstance().getAllShapes() returns a List<Shape>
             Map<Integer, Shape> shapes = (Map<Integer, Shape>) ShapeManager.getInstance().getAllShapes();
-
-            // Convert the list of shapes to JSON
             ObjectMapper objectMapper = new ObjectMapper();
             String jsonShapes = objectMapper.writeValueAsString(shapes);
-
-            // Return the JSON string
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(jsonShapes);
         } catch (JsonProcessingException e) {
-            // Handle JSON processing exception and return an error response if needed
-            return ResponseEntity.status(500).body("Error processing JSON"); // or return an error response
+            return ResponseEntity.status(500).body("Error processing JSON");
+        }
+    }
+
+    public ResponseEntity<String> load(String extension, String fileContents) {
+        if (extension.equals("xml")) {
+            return loadXml(fileContents);
+        } else {
+            loadJson(fileContents);
+        }
+        return null;
+    }
+
+    public ResponseEntity<String> loadXml(String fileContents) {
+        try {
+            ShapeManager.getInstance().clear();
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(fileContents.getBytes());
+            XMLDecoder decoder = new XMLDecoder(new BufferedInputStream(inputStream));
+            Map<Integer, Shape> loaded = (Map<Integer, Shape>) decoder.readObject();
+            decoder.close();
+
+            System.out.println(loaded);
+            shapes = loaded;
+            System.out.println("loadXml");
+            System.out.println(shapes);
+            Map<Integer, Shape> sh = (Map<Integer, Shape>) ShapeManager.getInstance().getAllShapes();
+            for (Map.Entry<Integer, Shape> entry : sh.entrySet()) {
+                System.out.println(entry.getKey() + " " + entry.getValue().read());
+            }
+            try {
+                Map<Integer, Shape> shapes = (Map<Integer, Shape>) ShapeManager.getInstance().getAllShapes();
+                ObjectMapper objectMapper = new ObjectMapper();
+                String jsonShapes = objectMapper.writeValueAsString(shapes);
+                return ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(jsonShapes);
+            } catch (JsonProcessingException e) {
+                return ResponseEntity.status(500).body("Error processing JSON");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void loadJson(String fileContents) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            System.out.println(shapes);
+            ShapeManager.getInstance().clear();
+            Map<Integer, Shape> loaded = (Map<Integer, Shape>) objectMapper.readValue(new File("./ho.json"), Map.class);
+            System.out.println("loadJsonFromFile");
+            System.out.println(loaded);
+            shapes = loaded;
+            System.out.println(shapes);
+            /*
+             * TypeReference<Map<Integer, Shape>> typeReference = new
+             * TypeReference<Map<Integer, Shape>>() {
+             * };
+             * Map<Integer, Shape> shapes = objectMapper.readValue(fileContents,
+             * typeReference);
+             * System.out.println(shapes);
+             */
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

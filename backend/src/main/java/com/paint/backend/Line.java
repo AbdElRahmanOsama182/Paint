@@ -6,13 +6,20 @@ import java.util.ArrayList;
 
 public class Line implements Shape {
     int id;
+    String type;
     ArrayList<Float> points;
     String color;
     float scaleX;
     float scaleY;
     float rotation;
 
+    public String getType() {
+        return this.type;
+    }
 
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public String getColor() {
         return color;
@@ -50,6 +57,7 @@ public class Line implements Shape {
     }
 
     public Line(Map<String, Object> attributes) {
+        setType("line");
         update(attributes);
     }
 
@@ -63,15 +71,15 @@ public class Line implements Shape {
 
     @Override
     public void update(Map<String, Object> attributes) {
-        update((int) attributes.get("id"),(ArrayList<Float>) attributes.get("points"), (String) attributes.get("color"),
+        update((int) attributes.get("id"), (ArrayList<Float>) attributes.get("points"),
+                (String) attributes.get("color"),
 
                 (float) attributes.get("scaleX"), (float) attributes.get("scaleY"),
                 (float) attributes.get("rotation"));
 
     }
 
-    public void update(int id,ArrayList<Float> points, String color, float scaleX, float scaleY, float rotation) {
-
+    public void update(int id, ArrayList<Float> points, String color, float scaleX, float scaleY, float rotation) {
         setPoints(points);
         setColor(color);
         setScaleX(scaleX);
@@ -79,15 +87,13 @@ public class Line implements Shape {
         setRotation(rotation);
         setId(id);
 
-
     }
 
     @Override
     public Shape clone(int newId) {
-        Line clone = new Line(Map.of("points", getPoints(), "color", getColor(), "scaleX", getScaleX(),
-                "scaleY", getScaleY(), "rotation", getRotation(), "id", newId));
-
-
+        Line clone = new Line(
+                Map.of("type", getType(), "points", getPoints(), "color", getColor(), "scaleX", getScaleX(),
+                        "scaleY", getScaleY(), "rotation", getRotation(), "id", newId));
         return clone;
     }
 
@@ -95,6 +101,7 @@ public class Line implements Shape {
     public Map<String, Object> read() {
         return Map.of(
                 "id", getId(),
+                "type", "line",
                 "points", getPoints(),
                 "scaleX", getScaleX(),
                 "scaleY", getScaleY(),

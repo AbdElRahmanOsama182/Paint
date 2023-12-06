@@ -1,6 +1,64 @@
 
 
 const DrawingFunctions = {
+    createFromJson(shape) {
+        let newShape;
+        switch (shape.type) {
+            case 'circle':
+                const center = shape.center;
+                console.log(center);
+                console.log(center.x);
+                newShape = new Konva.Circle({
+                    x: center.x,
+                    y: center.y,
+                    radius: shape.radius,
+                    fill: shape.color,
+                });
+                break;
+            case 'ellipse':
+                newShape = new Konva.Ellipse({
+                    x: shape.center.x,
+                    y: shape.center.y,
+                    radiusX: shape.radiusX,
+                    radiusY: shape.radiusY,
+                    fill: shape.color,
+                });
+                break;
+            case 'rectangle':
+            case 'square':
+                newShape = new Konva.Rect({
+                    x: shape.x,
+                    y: shape.y,
+                    width: shape.width,
+                    height: shape.height,
+                    fill: shape.color,
+                });
+                break;
+            case 'polygon':
+                newShape = new Konva.RegularPolygon({
+                    x: shape.center.x,
+                    y: shape.center.y,
+                    sides: shape.sides,
+                    radius: shape.radius,
+                    fill: shape.color,
+                });
+                break;
+            case 'line':
+                newShape = new Konva.Line({
+                    points: shape.points,
+                    stroke: shape.color,
+                    strokeWidth: 1.5,
+                });
+                break;
+            default:
+                return;
+        }
+        newShape.index = shape.id;
+        newShape.scaleX(shape.scaleX);
+        newShape.scaleY(shape.scaleY);
+        newShape.rotation(shape.rotation);
+        this.layer.add(newShape);
+    },
     createShape(pos) {
         switch (this.drawingShape) {
             case 'Circle':

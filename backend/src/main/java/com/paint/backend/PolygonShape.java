@@ -7,6 +7,7 @@ import java.util.Map;
 
 public class PolygonShape implements Shape {
     int id;
+    String type;
     Point2D.Float center;
     float radius;
     float scaleX;
@@ -20,7 +21,7 @@ public class PolygonShape implements Shape {
     }
 
     public PolygonShape(Map<String, Object> attributes) {
-
+        setType("polygon");
         update(attributes);
     }
 
@@ -30,6 +31,14 @@ public class PolygonShape implements Shape {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public Point2D.Float getCenter() {
@@ -91,24 +100,24 @@ public class PolygonShape implements Shape {
 
     @Override
     public Shape clone(int newId) {
-        PolygonShape clone = new PolygonShape(Map.of("center", getCenter(), "radius", getRadius(), "sides", getSides(),
-                "color", getColor(), "scaleX", getScaleX(), "scaleY", getScaleY(), "rotation", getRotation(), "id", newId));
+        PolygonShape clone = new PolygonShape(Map.of("type", getType(), "center", getCenter(), "radius", getRadius(),
+                "sides", getSides(),
+                "color", getColor(), "scaleX", getScaleX(), "scaleY", getScaleY(), "rotation", getRotation(), "id",
+                newId));
 
         return clone;
     }
 
     @Override
     public void update(Map<String, Object> attributes) {
-        update((int) attributes.get("id") ,(Point2D.Float) attributes.get("center"), (float) attributes.get("radius"),
-
+        update((int) attributes.get("id"), (Point2D.Float) attributes.get("center"), (float) attributes.get("radius"),
                 (int) attributes.get("sides"),
                 (String) attributes.get("color"), (float) attributes.get("scaleX"), (float) attributes.get("scaleY"),
                 (float) attributes.get("rotation"));
 
     }
 
-    public void update(int id,Point2D.Float center, float radius, int sides, String color, float scaleX, float scaleY,
-
+    public void update(int id, Point2D.Float center, float radius, int sides, String color, float scaleX, float scaleY,
             float rotation) {
         setCenter(center);
         setRadius(radius);
@@ -125,6 +134,7 @@ public class PolygonShape implements Shape {
     public Map<String, Object> read() {
         return Map.of(
                 "id", getId(),
+                "type", "polygon",
                 "center", getCenter(),
                 "radius", getRadius(),
                 "scaleX", getScaleX(),
@@ -133,15 +143,4 @@ public class PolygonShape implements Shape {
                 "color", getColor(),
                 "sides", getSides());
     }
-
-    // public static void main(String[] args) {
-    // Shape c = ShapeManager.getInstance().create("circle", new Point(0, 0), 5);
-    // ShapeManager.getInstance().clone(0);
-    // ArrayList<Shape> shapes = ShapeManager.getInstance().getAllShapes();
-    // for (Shape s : shapes) {
-    // System.out.println(ShapeManager.getInstance().read(s.getId()));
-
-    // }
-    // }
-
 }

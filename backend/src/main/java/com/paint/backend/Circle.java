@@ -20,32 +20,32 @@ public class Circle extends EllipticalShape {
     }
 
     public Circle(Map<String, Object> attributes) {
-
+        setType("circle");
         update(attributes);
-
     }
 
     @Override
     public Shape clone(int newId) {
         Circle clone = new Circle(
-                Map.of("center", getCenter(), "radius", getRadius(), "rotation", getRotation(),
-                        "color", getColor(), "scaleX", getScaleX(), "scaleY", getScaleY(),"id",newId));
-
+                Map.of("type", "circle", "center", getCenter(), "radius", getRadius(), "rotation", getRotation(),
+                        "color", getColor(), "scaleX", getScaleX(), "scaleY", getScaleY(), "id", newId));
 
         return clone;
     }
 
     @Override
     public void update(Map<String, Object> attributes) {
-        update((int)attributes.get("id"),(Point2D.Float) attributes.get("center"), (float) attributes.get("radius"),
-
+        update((int) attributes.get("id"), (String) attributes.get("type"),
+                (Point2D.Float) attributes.get("center"), (float) attributes.get("radius"),
                 (float) attributes.get("rotation"), (String) attributes.get("color"),
                 (float) attributes.get("scaleX"), (float) attributes.get("scaleY"));
 
     }
 
-    public void update(int id,Point2D.Float center, float radius, float rotation, String color, float scaleX, float scaleY) {
-
+    public void update(int id, String type, Point2D.Float center, float radius, float rotation, String color,
+            float scaleX,
+            float scaleY) {
+        setType(type);
         setCenter(center);
         setRadius(radius);
         setRotation(rotation);
@@ -60,6 +60,7 @@ public class Circle extends EllipticalShape {
     public Map<String, Object> read() {
         return Map.of(
                 "id", getId(),
+                "type", "circle",
                 "center", getCenter(),
                 "radius", getRadius(),
                 "scaleX", getScaleX(),
