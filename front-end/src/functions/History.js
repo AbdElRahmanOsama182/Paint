@@ -1,15 +1,21 @@
 const HistoryFunctions = {
 
-    undo() {
+    async undo() {
         if (this.historyIndex === 0) return;
         this.historyIndex -= 1;
         console.log("to copy",this.history)
         this.drawNewLayer()
+        await fetch("http://localhost:8080/layer/undo", {
+            method: "POST",
+        });
     },
-    redo() {
+    async redo() {
         if (this.historyIndex === this.history.length - 1) return;
         this.historyIndex += 1;
         this.drawNewLayer()
+        await fetch("http://localhost:8080/layer/redo", {
+            method: "POST",
+        });
     },
     drawNewLayer() {
         // destroy old layer
@@ -29,7 +35,7 @@ const HistoryFunctions = {
     clearHistory() {
         this.history = this.history.slice(0, this.historyIndex + 1);
     },
-    saveRecord() {
+    async saveRecord() {
         if (this.history.length > 0) {
             const historyPop = this.history[this.historyIndex];
             if (this.layer.children.length === historyPop.children.length) {
@@ -57,6 +63,9 @@ const HistoryFunctions = {
         this.history.push(newLayer);
         this.historyIndex += 1;
         console.log(this.historyIndex);
+        await fetch("http://localhost:8080/layer/record", {
+            method: "POST",
+        });
     },
 }
 

@@ -78,6 +78,7 @@ public class Ellipse extends EllipticalShape {
                 "radiusY", getRadiusY(),
                 "scaleX", getScaleX(),
                 "scaleY", getScaleY(),
-                "rotation", getRotation());
+                "rotation", getRotation(),
+                "color", getColor());
     }
 }

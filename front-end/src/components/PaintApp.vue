@@ -3,13 +3,22 @@
         <div class="panel" v-bind:style="{ left: `${x}px`, top: `${y}px` }" @mousedown="startDrag" @mousemove="dragging"
             @mouseup="stopDrag" @mouseleave="stopDrag">
             <div class="commands">
-                <button> load </button>
+                <button @click="showLoadOptions">Load</button>
+                <div v-if="showLoadDropdown" class="dropdown">
+                  <button @click="loadFile('json')">Load JSON</button>
+                  <button @click="loadFile('xml')">Load XML</button>
+                </div>
                 <button @click="undo()"> undo </button>
-                <button> save</button>
+                <button @click="showSaveOptions">Save</button>
+                <div v-if="showSaveDropdown" class="dropdown">
+                  <button @click="saveFile('json')">Save As JSON</button>
+                  <button @click="saveFile('xml')">Save As XML</button>
+                </div>
                 <button @click="redo()"> redo </button>
                 <button @click="deleteShape" :style="{backgroundColor: deleteColor}"> delete </button>
                 <button @click="cloneShape()" :style="{backgroundColor: cloneColor}">clone</button>
                 <button @click="toggleNewPanel">New</button>
+
             </div>
             <div class="shapes">
                 <button @click="drawShape('Circle')"> ◯ </button>
@@ -29,6 +38,7 @@
             </div>
 
             <div class="colors">
+
                 <button @click="changeShapeColor('black')"> </button>
                 <button @click="changeShapeColor('white')"> </button>
                 <button @click="changeShapeColor('cyan')"> </button>
@@ -37,6 +47,7 @@
                 <button @click="changeShapeColor('green')"> </button>
                 <button @click="changeShapeColor('magenta')"> </button>
                 <button @click="changeShapeColor('red')"> </button>
+
             </div>
 
         </div>
@@ -58,6 +69,8 @@
 
 <script>
 import Konva from 'konva';
+import { Stage, Layer, Rect, Circle, Ellipse, Line } from 'konva';
+import axios from 'axios';
 import { DrawingFunctions } from '../functions/Drawing.js';
 import { HistoryFunctions } from '../functions/History.js';
 export default {
@@ -89,6 +102,9 @@ export default {
             deleteColor: 'white',
             inputX: 1200,
             inputY: 600,
+            showLoadDropdown: false,
+            showSaveDropdown: false,
+
         };
     },
     mounted() {
@@ -116,9 +132,141 @@ export default {
                 shouldOverdrawWholeArea: true,
             }
         );
-        this.transformer.on("transformend", function (e) {
-            console.log(e);
-            e.target.setAttrs({ ...e.target.attrs, strokeWidth: 1 })
+        this.transformer.on("transformend", async function (e) {
+            console.log(e.currentTarget.nodes());
+            for (let key in e.currentTarget.nodes()) {
+                let shape = e.currentTarget.nodes()[key];
+                console.log(shape.className)
+                switch (shape.className) {
+                    case 'Circle':
+                        await fetch(
+                            `http://localhost:8080/circle/${shape.index}`,
+                            {
+                                method: "PUT",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+
+                                    id: shape.index,
+                                    center: {
+                                        x: shape.x(),
+                                        y: shape.y(),
+                                    },
+                                    radius: shape.radius(),
+                                    color: shape.fill(),
+                                    scaleX: shape.scaleX(),
+                                    scaleY: shape.scaleY(),
+                                    rotation: shape.rotation(),
+                                }),
+                            }
+                        ).then((res) => res.json())
+                            .then((data) => console.log("success", data));
+                        break;
+                    case 'Ellipse':
+                        await fetch(
+                            `http://localhost:8080/ellipse/${shape.index}`,
+                            {
+                                method: "PUT",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+
+                                    id: shape.index,
+                                    center: {
+                                        x: shape.x(),
+                                        y: shape.y(),
+                                    },
+                                    radiusX: shape.radiusX(),
+                                    radiusY: shape.radiusY(),
+                                    color: shape.fill(),
+                                    scaleX: shape.scaleX(),
+                                    scaleY: shape.scaleY(),
+                                    rotation: shape.rotation(),
+                                }),
+                            }
+                        ).then((res) => res.json())
+                            .then((data) => console.log("success", data));
+                        break;
+                    case 'Rect':
+                        await fetch(
+                            `http://localhost:8080/rectangle/${shape.index}`,
+                            {
+                                method: "PUT",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+
+                                    id: shape.index,
+                                        x: shape.x(),
+                                        y: shape.y(),
+                                    width: shape.width(),
+                                    height: shape.height(),
+                                    color: shape.fill(),
+                                    scaleX: shape.scaleX(),
+                                    scaleY: shape.scaleY(),
+                                    rotation: shape.rotation(),
+                                }),
+                            }
+                        ).then((res) => res.json())
+                            .then((data) => console.log("success", data));
+                        break;
+
+                    case 'RegularPolygon':
+                        await fetch(
+                            `http://localhost:8080/triangle/${shape.index}`,
+                            {
+                                method: "PUT",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+
+                                    id: shape.index,
+                                    center: {
+                                        x: shape.x(),
+                                        y: shape.y(),
+                                    },
+                                    radius: shape.radius(),
+                                    color: shape.fill(),
+                                    sides: shape.sides(),
+                                    scaleX: shape.scaleX(),
+                                    scaleY: shape.scaleY(),
+                                    rotation: shape.rotation(),
+                                }),
+                            }
+                        ).then((res) => res.json())
+                            .then((data) => console.log("success", data));
+                        break;
+
+                    case 'Line':
+                        await fetch(
+                            `http://localhost:8080/line/${shape.index}`,
+                            {
+                                method: "PUT",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+
+                                    id: shape.index,
+                                    points: shape.points(),
+                                    color: shape.stroke(),
+                                    scaleX: shape.scaleX(),
+                                    scaleY: shape.scaleY(),
+                                    rotation: shape.rotation(),
+                                }),
+                            }
+                        ).then((res) => res.json())
+                            .then((data) => console.log("success", data));
+                        break;
+
+
+                }
+            }
+
         })
         this.layer.add(this.transformer);
         this.selectionRectangle = new Konva.Rect({
@@ -139,7 +287,102 @@ export default {
     },
 
     methods: {
+        showSaveOptions() {
+            this.showSaveDropdown = !this.showSaveDropdown;
+            if (this.showLoadDropdown) this.showLoadDropdown = false;
+        },
+        async saveFile(extension) {
+            try {
+                let options;
+                if (extension === 'json') {
+                    options = {
+                        types: [
+                            {
+                                description: 'JSON Files',
+                                accept: { 'application/json': ['.json'] },
+                            },
+                        ],
+                    };
+                } else  {
+                    options = {
+                        types: [
+                            {
+                                description: 'XML Files',
+                                accept: { 'application/xml': ['.xml'] },
+                            },
+                        ],
+                    };
+                };
+                const fileHandle = await window.showSaveFilePicker(options);
+                const fileName = fileHandle.name.endsWith(extension)
+                    ? fileHandle.name
+                    : fileHandle.name + extension;
+                const response = await fetch(`http://localhost:8080/save/${extension}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json', // Set the content type
+                    },
+                });
+
+                // Get the file content from the response
+                const fileContent = await response.blob();
+                console.log(fileContent);
+                // Write the file content to the user-selected file
+                const writable = await fileHandle.createWritable();
+                await writable.write(fileContent);
+                await writable.close();
+
+                console.log('File saved successfully!');
+                this.showSaveDropdown = false;
+            } catch (error) {
+                this.showSaveDropdown = false;
+                console.error('Error saving file:', error);
+            }
+        },
+        showLoadOptions() {
+            this.showLoadDropdown = !this.showLoadDropdown;
+            if (this.showSaveDropdown) this.showSaveDropdown = false;
+        },
+        async loadFile(extension) {
+            try {
+                let options;
+                if (extension === 'json') {
+                    options = {
+                        types: [
+                        {
+                            description: 'JSON Files',
+                            accept: { 'application/json': ['.json'] },
+                        },
+                        ],
+                    };
+                } else  {
+                    options = {
+                        types: [
+                        {
+                            description: 'XML Files',
+                            accept: { 'application/xml': ['.xml'] },
+                        },
+                        ],
+                    };
+                };
+                const [fileHandle] = await window.showOpenFilePicker(options);
+                const file = await fileHandle.getFile();
+                const contents = await file.text();
+                if (!file.name.endsWith(extension)) {
+                    console.error('Invalid file format selected.');
+                    this.showLoadDropdown = false;
+                    return;
+                }
+                console.log('File loaded successfully:', contents);
+                this.showLoadDropdown = false; 
+            } catch (error) {
+                this.showLoadDropdown = false;
+                console.error('Error loading file:', error);
+            }
+        },
         Action() {
+            this.showLoadDropdown = false;
+            this.showSaveDropdown = false;
             if (this.isDrawing) this.startDrawing();
             else this.selectWindow();
         },
@@ -183,9 +426,10 @@ export default {
                     shape !== this.selectionRectangle &&
                     Konva.Util.haveIntersection(box, shape.getClientRect())
                 );
+                console.log(selected)
                 if (selected.length > 0) this.transformer.nodes(selected);
                 this.moveSelectedShapes();
-                if(this.isDeletable){
+                if (this.isDeletable) {
                     this.deleteSelectedShapes();
                 }
                 else if(this.isClonable){
@@ -202,7 +446,7 @@ export default {
                 this.transformer.nodes([this.layer.children[this.slectedShapeIndex]]);
                 console.log(`Shape selected: ${this.layer.children[this.slectedShapeIndex].name()}`);
                 this.moveSelectedShapes();
-                if(this.isDeletable){
+                if (this.isDeletable) {
                     this.deleteSelectedShapes();
                 }
                 else if(this.isClonable){
@@ -263,30 +507,30 @@ export default {
         },
         cloneShape(){
             this.isClonable = !this.isClonable;
-            if(this.isDeletable){
+            if (this.isDeletable) {
                 this.isDeletable = !this.isDeletable;
                 this.deleteColor='white';
             }
             if(this.isClonable) this.cloneColor='green';
             else this.cloneColor='white';
         },
-        deleteShape(){
+        deleteShape() {
             this.isDeletable = !this.isDeletable;
-            if(this.isClonable){
+            if (this.isClonable) {
                 this.isClonable = !this.isClonable;
                 this.cloneColor='white';
             }
             if (this.isDeletable) this.deleteColor='red';
             else this.deleteColor='white';
         },
-        emptyTransformer(){
-            if(this.transformer){
+        emptyTransformer() {
+            if (this.transformer) {
                 this.transformer.nodes().forEach((shape) => shape.draggable(false));
                 this.transformer.nodes([]);
             }
         },
-        deleteSelectedShapes(){
-            if(this.transformer){
+        deleteSelectedShapes() {
+            if (this.transformer) {
                 this.transformer.nodes().forEach((shape) => shape.destroy());
                 this.emptyTransformer();
             }
@@ -298,8 +542,8 @@ export default {
                 this.emptyTransformer();
             }
         },
-        moveSelectedShapes(){
-            if(this.transformer){
+        moveSelectedShapes() {
+            if (this.transformer) {
                 this.transformer.nodes().forEach((shape) => shape.draggable(true));
             }
         },
