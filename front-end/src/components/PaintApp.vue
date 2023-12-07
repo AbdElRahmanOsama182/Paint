@@ -17,7 +17,6 @@
                 <button @click="redo()">redo</button>
                 <button @click="deleteShape" :style="{ backgroundColor: deleteColor }">delete</button>
                 <button @click="cloneShape()" :style="{ backgroundColor: cloneColor }">clone</button>
-                <button @click="toggleNewPanel">New</button>
             </div>
             <div class="shapes">
                 <button @click="drawShape('Circle')">◯</button>
@@ -48,17 +47,9 @@
                 <button @click="changeShapeColor('red')"></button>
             </div>
         </div>
-
         <div class="wrapper">
             <div @dblclick="selectShape" @mousedown="Action" @mouseup="stopDrawing" class="canvas"
                 :style="{ width: `${CW}px`, height: `${CH}px` }"></div>
-        </div>
-        <div v-if="showResizePanel" @click.self="toggleNewPanel" class="newWrapper">
-            <div class="newPanel">
-                <input type="width" v-model="inputX" />
-                <input type="hight" v-model="inputY" />
-                <button @click="newCanvas">Create</button>
-            </div>
         </div>
     </div>
 </template>
@@ -85,7 +76,6 @@ export default {
             transformer: null,
             selectionRectangle: null,
             isPopupVisible: false,
-            showResizePanel: false,
             currentColor: "grey",
             history: [],
             historyIndex: 0,
@@ -94,18 +84,11 @@ export default {
             isClonable: false,
             cloneColor: "white",
             deleteColor: "white",
-            inputX: 1200,
-            inputY: 600,
             showLoadDropdown: false,
             showSaveDropdown: false
         };
     },
     mounted() {
-        this.CW = localStorage.getItem("canvasWidth") || 1200;
-        this.CH = localStorage.getItem("canvasHeight") || 600;
-        localStorage.setItem("canvasWidth", 1200);
-        localStorage.setItem("canvasHeight", 600);
-
         this.stage = new Konva.Stage({
             container: ".canvas",
             width: this.CW,
@@ -464,26 +447,6 @@ export default {
             if (this.isPopupVisible) {
                 this.showPicker();
             }
-        },
-        toggleNewPanel() {
-            this.showResizePanel = !this.showResizePanel;
-        },
-        newCanvas() {
-            if (
-                this.inputX > 100 &&
-                this.inputY > 100 &&
-                this.inputX < 2000 &&
-                this.inputY < 2000
-            ) {
-                localStorage.setItem("canvasWidth", this.inputX);
-                localStorage.setItem("canvasHeight", this.inputY);
-                location.reload();
-            } else {
-                alert("Please enter a valid number between 100 and 2000");
-                this.inputX = this.CW;
-                this.inputY = this.CH;
-            }
-            this.toggleNewPanel();
         },
         cloneShape() {
             this.isClonable = !this.isClonable;
