@@ -83,6 +83,8 @@ public class ShapeManager {
     public static void clear() {
         shapes.clear();
         shapes = new HashMap<>();
+        nextHistory = -1;
+        instance = null;
         history.clear();
     }
 
@@ -165,7 +167,7 @@ public class ShapeManager {
         if (extension.equals("xml")) {
             return loadXml(fileContents);
         } else {
-            loadJson(fileContents);
+            loadJson();
         }
         return null;
     }
@@ -187,9 +189,8 @@ public class ShapeManager {
                 System.out.println(entry.getKey() + " " + entry.getValue().read());
             }
             try {
-                Map<Integer, Shape> shapes = (Map<Integer, Shape>) ShapeManager.getInstance().getAllShapes();
                 ObjectMapper objectMapper = new ObjectMapper();
-                String jsonShapes = objectMapper.writeValueAsString(shapes);
+                String jsonShapes = objectMapper.writeValueAsString(loaded);
                 return ResponseEntity.ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(jsonShapes);
@@ -203,26 +204,7 @@ public class ShapeManager {
         }
     }
 
-    public void loadJson(String fileContents) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            System.out.println(shapes);
-            ShapeManager.getInstance().clear();
-            Map<Integer, Shape> loaded = (Map<Integer, Shape>) objectMapper.readValue(new File("./ho.json"), Map.class);
-            System.out.println("loadJsonFromFile");
-            System.out.println(loaded);
-            shapes = loaded;
-            System.out.println(shapes);
-            /*
-             * TypeReference<Map<Integer, Shape>> typeReference = new
-             * TypeReference<Map<Integer, Shape>>() {
-             * };
-             * Map<Integer, Shape> shapes = objectMapper.readValue(fileContents,
-             * typeReference);
-             * System.out.println(shapes);
-             */
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void loadJson() {
+        ShapeManager.getInstance().clear();
     }
 }

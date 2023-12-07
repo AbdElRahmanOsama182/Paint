@@ -18,6 +18,7 @@
                 <button @click="deleteShape" :style="{ backgroundColor: deleteColor }"> delete </button>
                 <button @click="cloneShape()" :style="{ backgroundColor: cloneColor }">clone</button>
                 <button @click="resizeShape" :style="{ backgroundColor: resizeColor }">resize</button>
+                <button @click="clearAll">clear</button>
                 <button class="alien" @dblclick="clearAll">👽</button>
             </div>
             <div class="shapes">
@@ -372,13 +373,12 @@ export default {
                     this.showLoadDropdown = false;
                     return;
                 }
-                const newShapes = await response.json();
+                let newShapes;
+                if (extension==='json') newShapes = JSON.parse(contents);
+                else newShapes = await response.json();
                 const shapesArray = Object.values(newShapes);
                 console.log(shapesArray);
-                this.emptyTransformer();
-                this.layer.children.forEach((shape) => {
-                    if (shape.index !== 0 && shape.index !== 1) shape.destroy();
-                });
+                this.clearAll();
                 shapesArray.forEach((shape) => {
                     this.createFromJson(shape);
                 });
@@ -397,6 +397,14 @@ export default {
             if (this.isResizing) this.checkShape();
             else if (this.isDrawing) this.startDrawing();
             else this.selectWindow();
+        },
+        clearAll() {
+            this.emptyTransformer();
+            while (this.layer.children.length > 2) {
+                this.layer.children[2].destroy();
+            }
+            this.layer.draw();
+            this.saveRecord();
         },
         selectWindow() {
             this.stage.off('mousemove');
@@ -444,7 +452,7 @@ export default {
                 if (this.isDeletable) {
                     this.deleteSelectedShapes();
                 }
-                if (this.isClonable) {
+                else if (this.isClonable) {
                     this.cloneSelectedShapes();
                 }
             });
@@ -460,6 +468,9 @@ export default {
                 this.moveSelectedShapes();
                 if (this.isDeletable) {
                     this.deleteSelectedShapes();
+                }
+                else if (this.isClonable) {
+                    this.cloneSelectedShapes();
                 }
             }
             else {
@@ -528,18 +539,31 @@ export default {
                 this.transformer.nodes([]);
             }
         },
-        deleteSelectedShapes() {
+        async deleteSelectedShapes() {
             if (this.transformer) {
-                this.transformer.nodes().forEach((shape) => shape.destroy());
+                this.transformer.nodes().forEach(async (shape) => {
+                    await fetch(`http://localhost:8080/shape/${shape.index}`, {
+                        method: "DELETE",
+                    });
+                    shape.destroy();
+                });
                 this.transformer.nodes([]);
+                this.saveRecord();
             }
         },
-        cloneSelectedShapes() {
+        async cloneSelectedShapes() {
             if (this.transformer) {
-                this.transformer.nodes().forEach((shape) =>
-                    this.layer.add(shape.clone().offsetX(100).offsetY(100)),
-
-                    this.transformer.nodes([]));
+                let shapes = this.transformer.nodes();
+                let clonedShapes = [];
+                this.emptyTransformer();
+                shapes.forEach((shape) => {
+                    clonedShapes.push(shape.clone().offsetX(50).offsetY(50));
+                });
+                clonedShapes.forEach((shape) => {
+                    this.layer.add(shape);
+                });
+                this.transformer.nodes(clonedShapes);
+                this.moveSelectedShapes();
             }
         },
         moveSelectedShapes() {
