@@ -3,7 +3,7 @@ const HistoryFunctions = {
     async undo() {
         if (this.historyIndex === 0) return;
         this.historyIndex -= 1;
-        console.log("to copy",this.history)
+        console.log("to copy", this.history)
         this.drawNewLayer()
         await fetch("http://localhost:8080/layer/undo", {
             method: "POST",
@@ -26,7 +26,7 @@ const HistoryFunctions = {
             this.layer.add(newLayer.children[child].clone())
         }
         this.transformer = this.layer.children[0]
-        this.selectionRectangle=this.layer.children[1]
+        this.selectionRectangle = this.layer.children[1]
         this.selectionRectangle.visible(false)
         this.layer.draw()
         console.log("new layer", this.layer)
@@ -69,4 +69,5 @@ const HistoryFunctions = {
     },
 }
 
-export { HistoryFunctions }
+export { HistoryFunctions };
+
