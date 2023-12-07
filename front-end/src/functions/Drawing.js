@@ -58,7 +58,141 @@ const DrawingFunctions = {
         newShape.scaleY(shape.scaleY);
         newShape.rotation(shape.rotation);
         this.layer.add(newShape);
+        this.toBackend(newShape, shape.type);
     },
+    async toBackend(shape, type) {
+        switch (type) {
+            case 'circle':
+                await fetch('http://localhost:8080/circle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: shape.index,
+                        center: {
+                            x: shape.x(),
+                            y: shape.y(),
+                        },
+                        radius: shape.radius(),
+                        color: shape.fill(),
+                        scaleX: shape.scaleX(),
+                        scaleY: shape.scaleY(),
+                        rotation: shape.rotation(),
+                    }),
+                }).then(response => response.json())
+                    .then(data => {
+                    });
+                break;
+            case 'ellipse':
+                await fetch('http://localhost:8080/ellipse', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: shape.index,
+                        center: {
+                            x: shape.x(),
+                            y: shape.y(),
+                        },
+                        radiusX: shape.radiusX(),
+                        radiusY: shape.radiusY(),
+                        color: shape.fill(),
+                        scaleX: shape.scaleX(),
+                        scaleY: shape.scaleY(),
+                        rotation: shape.rotation(),
+                    }),
+                }).then(response => response.json())
+                    .then(data => {
+                    });
+                break;
+            case 'square':
+                await fetch('http://localhost:8080/square', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: shape.index,
+                        x: shape.x(),
+                        y: shape.y(),
+                        width: shape.width(),
+                        height: shape.height(),
+                        color: shape.fill(),
+                        scaleX: shape.scaleX(),
+                        scaleY: shape.scaleY(),
+                        rotation: shape.rotation(),
+                    }),
+                }).then(response => response.json())
+                    .then(data => {
+                    });
+                break;
+            case 'rectangle':
+                await fetch('http://localhost:8080/rectangle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: shape.index,
+                        x: shape.x(),
+                        y: shape.y(),
+                        width: shape.width(),
+                        height: shape.height(),
+                        color: shape.fill(),
+                        scaleX: shape.scaleX(),
+                        scaleY: shape.scaleY(),
+                        rotation: shape.rotation(),
+                    }),
+                }).then(response => response.json())
+                    .then(data => {
+                    });
+                break;
+            case 'polygon':
+                await fetch('http://localhost:8080/triangle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: shape.index,
+                        center: {
+                            x: shape.x(),
+                            y: shape.y(),
+                        },
+                        radius: shape.radius(),
+                        color: shape.fill(),
+                        scaleX: shape.scaleX(),
+                        scaleY: shape.scaleY(),
+                        rotation: shape.rotation(),
+                        sides: shape.sides(),
+                    }),
+                }).then(response => response.json())
+                    .then(data => {
+                    });
+                break;
+            case 'line':
+                await fetch('http://localhost:8080/line', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: shape.index,
+                        points: shape.points(),
+                        color: shape.stroke(),
+                        scaleX: shape.scaleX(),
+                        scaleY: shape.scaleY(),
+                        rotation: shape.rotation(),
+                    }),
+                }).then(response => response.json())
+                    .then(data => {
+                    });
+                break;
+        }
+    },
+
     createShape(pos) {
         switch (this.drawingShape) {
             case 'Circle':
@@ -104,7 +238,7 @@ const DrawingFunctions = {
                 return new Konva.Line({
                     points: [pos.x, pos.y, pos.x + 10, pos.y + 10],
                     stroke: this.currentColor,
-                    strokeWidth: 1.5,
+                    strokeWidth: 5,
                 });
         }
     },
@@ -384,6 +518,7 @@ const DrawingFunctions = {
                         scaleX: shape.scaleX(),
                         scaleY: shape.scaleY(),
                         rotation: shape.rotation(),
+                        sides: shape.sides(),
                     }),
                 }).then(response => response.json())
                     .then(data => {
