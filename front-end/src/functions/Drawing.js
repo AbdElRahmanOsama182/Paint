@@ -1,6 +1,198 @@
 
 
 const DrawingFunctions = {
+    createFromJson(shape) {
+        let newShape;
+        switch (shape.type) {
+            case 'circle':
+                const center = shape.center;
+                console.log(center);
+                console.log(center.x);
+                newShape = new Konva.Circle({
+                    x: center.x,
+                    y: center.y,
+                    radius: shape.radius,
+                    fill: shape.color,
+                });
+                break;
+            case 'ellipse':
+                newShape = new Konva.Ellipse({
+                    x: shape.center.x,
+                    y: shape.center.y,
+                    radiusX: shape.radiusX,
+                    radiusY: shape.radiusY,
+                    fill: shape.color,
+                });
+                break;
+            case 'rectangle':
+            case 'square':
+                newShape = new Konva.Rect({
+                    x: shape.x,
+                    y: shape.y,
+                    width: shape.width,
+                    height: shape.height,
+                    fill: shape.color,
+                });
+                break;
+            case 'polygon':
+                newShape = new Konva.RegularPolygon({
+                    x: shape.center.x,
+                    y: shape.center.y,
+                    sides: shape.sides,
+                    radius: shape.radius,
+                    fill: shape.color,
+                });
+                break;
+            case 'line':
+                newShape = new Konva.Line({
+                    points: shape.points,
+                    stroke: shape.color,
+                    strokeWidth: 1.5,
+                });
+                break;
+            default:
+                return;
+        }
+        newShape.index = shape.id;
+        newShape.scaleX(shape.scaleX);
+        newShape.scaleY(shape.scaleY);
+        newShape.rotation(shape.rotation);
+        this.layer.add(newShape);
+        this.toBackend(newShape, shape.type);
+    },
+    async toBackend(shape, type) {
+        switch (type) {
+            case 'circle':
+                await fetch('http://localhost:8080/circle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: shape.index,
+                        center: {
+                            x: shape.x(),
+                            y: shape.y(),
+                        },
+                        radius: shape.radius(),
+                        color: shape.fill(),
+                        scaleX: shape.scaleX(),
+                        scaleY: shape.scaleY(),
+                        rotation: shape.rotation(),
+                    }),
+                }).then(response => response.json())
+                    .then(data => {
+                    });
+                break;
+            case 'ellipse':
+                await fetch('http://localhost:8080/ellipse', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: shape.index,
+                        center: {
+                            x: shape.x(),
+                            y: shape.y(),
+                        },
+                        radiusX: shape.radiusX(),
+                        radiusY: shape.radiusY(),
+                        color: shape.fill(),
+                        scaleX: shape.scaleX(),
+                        scaleY: shape.scaleY(),
+                        rotation: shape.rotation(),
+                    }),
+                }).then(response => response.json())
+                    .then(data => {
+                    });
+                break;
+            case 'square':
+                await fetch('http://localhost:8080/square', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: shape.index,
+                        x: shape.x(),
+                        y: shape.y(),
+                        width: shape.width(),
+                        height: shape.height(),
+                        color: shape.fill(),
+                        scaleX: shape.scaleX(),
+                        scaleY: shape.scaleY(),
+                        rotation: shape.rotation(),
+                    }),
+                }).then(response => response.json())
+                    .then(data => {
+                    });
+                break;
+            case 'rectangle':
+                await fetch('http://localhost:8080/rectangle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: shape.index,
+                        x: shape.x(),
+                        y: shape.y(),
+                        width: shape.width(),
+                        height: shape.height(),
+                        color: shape.fill(),
+                        scaleX: shape.scaleX(),
+                        scaleY: shape.scaleY(),
+                        rotation: shape.rotation(),
+                    }),
+                }).then(response => response.json())
+                    .then(data => {
+                    });
+                break;
+            case 'polygon':
+                await fetch('http://localhost:8080/triangle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: shape.index,
+                        center: {
+                            x: shape.x(),
+                            y: shape.y(),
+                        },
+                        radius: shape.radius(),
+                        color: shape.fill(),
+                        scaleX: shape.scaleX(),
+                        scaleY: shape.scaleY(),
+                        rotation: shape.rotation(),
+                        sides: shape.sides(),
+                    }),
+                }).then(response => response.json())
+                    .then(data => {
+                    });
+                break;
+            case 'line':
+                await fetch('http://localhost:8080/line', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: shape.index,
+                        points: shape.points(),
+                        color: shape.stroke(),
+                        scaleX: shape.scaleX(),
+                        scaleY: shape.scaleY(),
+                        rotation: shape.rotation(),
+                    }),
+                }).then(response => response.json())
+                    .then(data => {
+                    });
+                break;
+        }
+    },
+
     createShape(pos) {
         switch (this.drawingShape) {
             case 'Circle':
@@ -46,7 +238,7 @@ const DrawingFunctions = {
                 return new Konva.Line({
                     points: [pos.x, pos.y, pos.x + 10, pos.y + 10],
                     stroke: this.currentColor,
-                    strokeWidth: 1.5,
+                    strokeWidth: 5,
                 });
         }
     },
@@ -195,15 +387,20 @@ const DrawingFunctions = {
     stopDrawing(event) {
         this.stage.off('mousemove', this.drawing);
         this.isDrawing = false;
+        this.setResize(false);
         this.saveRecord();
 
     },
     async drawing(event) {
-        if (!this.isDrawing) return;
+        if (!this.isDrawing && !this.isResizing) return;
 
+        var index = this.layer.children.length - 1;
+        if(this.isResizing){
+            index = this.clickedShapeIndex;
+        }
         const pos = this.stage.getPointerPosition();
-        const shape = this.layer.children[this.layer.children.length - 1];
-
+        
+        const shape = this.layer.children[index];
         switch (this.drawingShape) {
             case 'Circle':
                 const radius = Math.sqrt(Math.pow(pos.x - shape.x(), 2) + Math.pow(pos.y - shape.y(), 2));
@@ -321,6 +518,7 @@ const DrawingFunctions = {
                         scaleX: shape.scaleX(),
                         scaleY: shape.scaleY(),
                         rotation: shape.rotation(),
+                        sides: shape.sides(),
                     }),
                 }).then(response => response.json())
                     .then(data => {

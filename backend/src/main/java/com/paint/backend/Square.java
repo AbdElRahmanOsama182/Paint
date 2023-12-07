@@ -11,7 +11,8 @@ public class Square extends Rectangle {
     }
 
     public Square(Map<String, Object> attributes) {
-        super(attributes);
+        setType("square");
+        super.update(attributes);
     }
 
     @Override
@@ -21,7 +22,8 @@ public class Square extends Rectangle {
 
     @Override
     public Shape clone() {
-        Square clone = new Square(Map.of("height", getHeight(), "width", getWidth(), "x", getX(),
+        Square clone = new Square(Map.of("type", getType(),
+                "height", getHeight(), "width", getWidth(), "x", getX(),
                 "y", getY(), "scaleX", getScaleX(), "scaleY", getScaleY(), "rotation",
                 getRotation(), "color", getColor()));
         return clone;

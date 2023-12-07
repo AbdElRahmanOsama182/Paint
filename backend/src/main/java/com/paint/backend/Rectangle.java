@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class Rectangle implements Shape {
 
     int id;
+    String type;
     float height;
     float width;
     float x;
@@ -21,13 +22,14 @@ public class Rectangle implements Shape {
     }
 
     public Rectangle(Map<String, Object> attributes) {
+        setType("rectangle");
         update(attributes);
 
     }
 
     @Override
     public void update(Map<String, Object> attributes) {
-        update((int) attributes.get("id"),(float) attributes.get("height"), (float) attributes.get("width"),
+        update((int) attributes.get("id"), (float) attributes.get("height"), (float) attributes.get("width"),
 
                 (float) attributes.get("x"), (float) attributes.get("y"),
                 (float) attributes.get("scaleX"), (float) attributes.get("scaleY"),
@@ -35,7 +37,7 @@ public class Rectangle implements Shape {
 
     }
 
-    public void update(int id,float height, float width, float x, float y,
+    public void update(int id, float height, float width, float x, float y,
 
             float scaleX, float scaleY, float rotation, String color) {
         setHeight(height);
@@ -114,11 +116,20 @@ public class Rectangle implements Shape {
         this.color = color;
     }
 
+    public String getType() {
+        return this.type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     @Override
     public Shape clone(int newId) {
-        Rectangle clone = new Rectangle(Map.of("height", getHeight(), "width", getWidth(), "x", getX(), "y", getY(),
-                "scaleX", getScaleX(), "scaleY", getScaleY(), "rotation", getRotation(), "color", getColor(), "id", newId));
-
+        Rectangle clone = new Rectangle(Map.of("type", getType(),
+                "height", getHeight(), "width", getWidth(), "x", getX(), "y", getY(),
+                "scaleX", getScaleX(), "scaleY", getScaleY(), "rotation", getRotation(), "color", getColor(), "id",
+                newId));
 
         return clone;
     }
@@ -127,6 +138,7 @@ public class Rectangle implements Shape {
     public Map<String, Object> read() {
         return Map.of(
                 "id", getId(),
+                "type", "rectangle",
                 "height", getHeight(),
                 "width", getWidth(),
                 "x", getX(),

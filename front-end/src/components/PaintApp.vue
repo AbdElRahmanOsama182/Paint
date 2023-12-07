@@ -17,6 +17,9 @@
                 <button @click="redo()">redo</button>
                 <button @click="deleteShape" :style="{ backgroundColor: deleteColor }">delete</button>
                 <button @click="cloneShape()" :style="{ backgroundColor: cloneColor }">clone</button>
+                <button @click="resizeShape" :style="{ backgroundColor: resizeColor }">resize</button>
+                <button @click="clearAll">clear</button>
+                <button class="alien" @dblclick="clearAll">👽</button>
             </div>
             <div class="shapes">
                 <button @click="drawShape('Circle')">◯</button>
@@ -85,7 +88,10 @@ export default {
             cloneColor: "white",
             deleteColor: "white",
             showLoadDropdown: false,
-            showSaveDropdown: false
+            showSaveDropdown: false,
+            isResizing: false,
+            resizeColor: 'white',
+            clickedShapeIndex: null,
         };
     },
     mounted() {
@@ -326,7 +332,31 @@ export default {
                     this.showLoadDropdown = false;
                     return;
                 }
-                console.log("File loaded successfully:", contents);
+                console.log('File loaded successfully:', contents);
+                const response = await fetch(`http://localhost:8080/load/${extension}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': extension === 'json' ? 'application/json' : 'application/xml',
+                    },
+                    body: contents ,
+                });
+                if (!response.ok) {
+                    console.error('Error loading file:', response);
+                    this.showLoadDropdown = false;
+                    return;
+                }
+                let newShapes;
+                if (extension==='json') newShapes = JSON.parse(contents);
+                else newShapes = await response.json();
+                const shapesArray = Object.values(newShapes);
+                console.log(shapesArray);
+                this.clearAll();
+                shapesArray.forEach((shape) => {
+                    this.createFromJson(shape);
+                });
+                console.log(this.layer.children);
+                this.layer.draw();
+                this.saveRecord();
                 this.showLoadDropdown = false;
             } catch (error) {
                 this.showLoadDropdown = false;
@@ -336,8 +366,17 @@ export default {
         Action() {
             this.showLoadDropdown = false;
             this.showSaveDropdown = false;
-            if (this.isDrawing) this.startDrawing();
+            if (this.isResizing) this.checkShape();
+            else if (this.isDrawing) this.startDrawing();
             else this.selectWindow();
+        },
+        clearAll() {
+            this.emptyTransformer();
+            while (this.layer.children.length > 2) {
+                this.layer.children[2].destroy();
+            }
+            this.layer.draw();
+            this.saveRecord();
         },
         selectWindow() {
             this.stage.off("mousemove");
@@ -385,7 +424,8 @@ export default {
                 this.moveSelectedShapes();
                 if (this.isDeletable) {
                     this.deleteSelectedShapes();
-                } else if (this.isClonable) {
+                }
+                else if (this.isClonable) {
                     this.cloneSelectedShapes();
                 }
             });
@@ -412,12 +452,17 @@ export default {
                 } else if (this.isClonable) {
                     this.cloneSelectedShapes();
                 }
-            } else {
+                else if (this.isClonable) {
+                    this.cloneSelectedShapes();
+                }
+            }
+            else {
                 this.emptyTransformer();
                 console.log("No shape selected");
             }
         },
         drawShape(shape) {
+            this.setResize(false);
             this.drawingShape = shape;
             this.isDrawing = true;
             console.log(this.drawingShape);
@@ -448,6 +493,11 @@ export default {
                 this.showPicker();
             }
         },
+        resizeShape(){
+            this.setDelete(0);
+            this.setClone(0);
+            this.setResize(!this.isResizing);  
+        },
         cloneShape() {
             this.isClonable = !this.isClonable;
             if (this.isDeletable) {
@@ -472,27 +522,30 @@ export default {
                 this.transformer.nodes([]);
             }
         },
-        deleteSelectedShapes() {
+        async deleteSelectedShapes() {
             if (this.transformer) {
-                this.transformer.nodes().forEach(shape => shape.destroy());
-                this.emptyTransformer();
+                this.transformer.nodes().forEach(async (shape) => {
+                    await fetch(`http://localhost:8080/shape/${shape.index}`, {
+                        method: "DELETE",
+                    });
+                    shape.destroy();
+                });
+                this.transformer.nodes([]);
+                this.saveRecord();
             }
         },
-        cloneSelectedShapes() {
+        async cloneSelectedShapes() {
             if (this.transformer) {
                 let shapes = this.transformer.nodes();
-                let clones = [];
+                let clonedShapes = [];
                 this.emptyTransformer();
-                shapes.forEach(shape =>
-                    clones.push(
-                        shape
-                            .clone()
-                            .offsetX(100)
-                            .offsetY(100)
-                    )
-                );
-                clones.forEach((clone) => this.layer.add(clone));
-                this.transformer.nodes(clones);
+                shapes.forEach((shape) => {
+                    clonedShapes.push(shape.clone().offsetX(50).offsetY(50));
+                });
+                clonedShapes.forEach((shape) => {
+                    this.layer.add(shape);
+                });
+                this.transformer.nodes(clonedShapes);
                 this.moveSelectedShapes();
             }
         },
@@ -540,14 +593,53 @@ export default {
                 console.log("undone");
             }
         },
-
         redoKey(event) {
             if (event.ctrlKey && event.shiftKey && event.keyCode == 90) {
                 this.redo();
                 console.log("redone");
             }
         },
-
+        checkShape(){
+            if(this.isResizing){
+                const pos = this.stage.getPointerPosition();
+                const shape = this.stage.getIntersection(pos);
+                console.log(shape);
+                if(shape) {
+                    this.drawingShape = this.shapeType(shape);
+                    this.clickedShapeIndex = shape.index;
+                }
+            }
+            this.stage.on('mousemove', this.drawing);
+        },
+        setResize(value){
+            this.isResizing = value;
+            this.resizeColor = this.activeColorfn(this.isResizing);
+            this.drawingShape = null;
+            this.clickedShapeIndex = null;
+        },
+        setDelete(value){
+            this.isDeletable = value;
+            this.deleteColor = this.activeColorfn(this.isDeletable);
+        },
+        setClone(value){
+            this.isClonable = value;
+            this.cloneColor = this.activeColorfn(this.isClonable);
+        },
+        shapeType(shape){
+            var name = shape.getClassName();
+            if(name == "RegularPolygon"){
+                name = "Triangle";
+            }
+            else if(name == "Rect"){
+                if(shape.getAttr('height') == shape.getAttr('width')){
+                    name = "Square";
+                }
+                else{
+                    name = "Rectangle";
+                }
+            }
+            return name;
+        },
         ...HistoryFunctions,
         ...DrawingFunctions
     }

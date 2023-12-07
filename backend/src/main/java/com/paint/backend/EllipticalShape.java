@@ -6,6 +6,7 @@ import java.awt.geom.Point2D;
 
 public class EllipticalShape implements Shape {
     int id;
+    String type;
     Point2D.Float center;
     float scaleX;
     float scaleY;
@@ -18,6 +19,14 @@ public class EllipticalShape implements Shape {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public Point2D.Float getCenter() {
