@@ -5,14 +5,15 @@
             <div class="commands">
                 <button @click="showLoadOptions">Load</button>
                 <div v-if="showLoadDropdown" class="dropdown">
-                    <button @click="loadFile('json')">Load JSON</button>
-                    <button @click="loadFile('xml')">Load XML</button>
+                    <button @click="loadFile('json')">JSON</button>
+                    <button @click="loadFile('xml')">XML</button>
                 </div>
                 <button @click="undo()">undo</button>
-                <button @click="showSaveOptions">Save</button>
+                <button @click="showSaveOptions">Save as</button>
                 <div v-if="showSaveDropdown" class="dropdown">
-                    <button @click="saveFile('json')">Save As JSON</button>
-                    <button @click="saveFile('xml')">Save As XML</button>
+                    <button @click="saveFile('json')">JSON</button>
+                    <button @click="saveFile('xml')">XML</button>
+                    <button @click="saveFile('png')">Image</button>
                 </div>
                 <button @click="redo()">redo</button>
                 <button @click="deleteShape" :style="{ backgroundColor: deleteColor }">delete</button>
@@ -246,44 +247,68 @@ export default {
     },
     methods: {
         showSaveOptions() {
-            this.showSaveDropdown = !this.showSaveDropdown;
-            if (this.showLoadDropdown) this.showLoadDropdown = false;
+            if (!this.showSaveDropdown) {
+                this.resetButtons();
+                this.showSaveDropdown = true;
+            }
+            else {
+                this.resetButtons();
+                this.showSaveDropdown = false;
+            }
         },
         async saveFile(extension) {
+            this.emptyTransformer();
             try {
                 let options;
-                if (extension === "json") {
+                if (extension === 'json') {
                     options = {
                         types: [
                             {
-                                description: "JSON Files",
-                                accept: { "application/json": [".json"] }
-                            }
-                        ]
+                                description: 'JSON Files',
+                                accept: { 'application/json': ['.json'] },
+                            },
+                        ],
                     };
-                } else {
+                } else if (extension === 'png') {
                     options = {
                         types: [
                             {
-                                description: "XML Files",
-                                accept: { "application/xml": [".xml"] }
-                            }
-                        ]
+                                description: 'PNG Files',
+                                accept: { 'image/png': ['.png'] },
+                            },
+                        ],
                     };
-                }
+                } else  {
+                    options = {
+                        types: [
+                            {
+                                description: 'XML Files',
+                                accept: { 'application/xml': ['.xml'] },
+                            },
+                        ],
+                    };
+                };
                 const fileHandle = await window.showSaveFilePicker(options);
                 const fileName = fileHandle.name.endsWith(extension)
                     ? fileHandle.name
                     : fileHandle.name + extension;
-                const response = await fetch(
-                    `http://localhost:8080/save/${extension}`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json" // Set the content type
-                        }
-                    }
-                );
+                if (extension === 'png') {
+                    const dataURL = this.stage.toDataURL({ pixelRatio: 3});
+                    const blob = await (await fetch(dataURL)).blob();
+                    const writable = await fileHandle.createWritable();
+                    await writable.write(blob);
+                    await writable.close();
+                    console.log('File saved successfully!');
+                    this.showSaveDropdown = false;
+                    return;
+                }
+                const response = await fetch(`http://localhost:8080/save/${extension}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json', // Set the content type
+                    },
+                });
+
                 // Get the file content from the response
                 const fileContent = await response.blob();
                 console.log(fileContent);
@@ -291,16 +316,23 @@ export default {
                 const writable = await fileHandle.createWritable();
                 await writable.write(fileContent);
                 await writable.close();
-                console.log("File saved successfully!");
+
+                console.log('File saved successfully!');
                 this.showSaveDropdown = false;
             } catch (error) {
                 this.showSaveDropdown = false;
-                console.error("Error saving file:", error);
+                console.error('Error saving file:', error);
             }
         },
         showLoadOptions() {
-            this.showLoadDropdown = !this.showLoadDropdown;
-            if (this.showSaveDropdown) this.showSaveDropdown = false;
+            if (!this.showLoadDropdown) {
+                this.resetButtons();
+                this.showLoadDropdown = true;
+            }
+            else {
+                this.resetButtons();
+                this.showLoadDropdown = false;
+            }
         },
         async loadFile(extension) {
             try {
@@ -371,6 +403,7 @@ export default {
             else this.selectWindow();
         },
         clearAll() {
+            this.resetButtons();
             this.emptyTransformer();
             while (this.layer.children.length > 2) {
                 this.layer.children[2].destroy();
@@ -461,7 +494,21 @@ export default {
                 console.log("No shape selected");
             }
         },
+        resetButtons() {
+            this.isDrawing = false;
+            this.isDragging = false;
+            this.isDeletable = false;
+            this.isClonable = false;
+            this.isResizing = false;
+            this.showLoadDropdown = false;
+            this.showSaveDropdown = false;
+            this.deleteColor = "white";
+            this.cloneColor = "white";
+            this.resizeColor = "white";
+        },
         drawShape(shape) {
+            this.emptyTransformer();
+            this.resetButtons();
             this.setResize(false);
             this.drawingShape = shape;
             this.isDrawing = true;
@@ -494,9 +541,12 @@ export default {
             }
         },
         resizeShape(){
+            this.emptyTransformer();
             this.setDelete(0);
             this.setClone(0);
             this.setResize(!this.isResizing);  
+            this.showLoadDropdown = false;
+            this.showSaveDropdown = false;
         },
         cloneShape() {
             this.isClonable = !this.isClonable;
@@ -504,17 +554,39 @@ export default {
                 this.isDeletable = !this.isDeletable;
                 this.deleteColor = "white";
             }
+            if (this.isResizing) {
+                this.isResizing = !this.isResizing;
+                this.resizeColor = "white";
+            }
+            this.showLoadDropdown = false;
+            this.showSaveDropdown = false;
+            this.emptyTransformer();
             if (this.isClonable) this.cloneColor = "green";
             else this.cloneColor = "white";
         },
         deleteShape() {
+            this.emptyTransformer();
             this.isDeletable = !this.isDeletable;
             if (this.isClonable) {
                 this.isClonable = !this.isClonable;
                 this.cloneColor = "white";
             }
+            if (this.isResizing) {
+                this.isResizing = !this.isResizing;
+                this.resizeColor = "white";
+            }
+            this.showLoadDropdown = false;
+            this.showSaveDropdown = false;
             if (this.isDeletable) this.deleteColor = "red";
             else this.deleteColor = "white";
+        },
+        activeColorfn(bool) {
+            if (bool) {
+                return 'rgba(35,209,20,1)';
+            }
+            else {
+                return 'white';
+            }
         },
         emptyTransformer() {
             if (this.transformer) {
