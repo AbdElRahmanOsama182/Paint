@@ -54,7 +54,7 @@ button:active {
     grid-template-rows: repeat(2, 1fr);
     gap: 5px;
     grid-auto-flow: column;
-
+    font-size: 20px;
 }
 
 .colors {

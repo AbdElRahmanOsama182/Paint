@@ -1,8 +1,5 @@
 package com.paint.backend;
 
-import java.awt.Point;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 public class ShapeFactory {

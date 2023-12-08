@@ -1,7 +1,6 @@
 package com.paint.backend;
 
 import java.util.Map;
-import java.awt.Point;
 import java.util.ArrayList;
 
 public class Line implements Shape {

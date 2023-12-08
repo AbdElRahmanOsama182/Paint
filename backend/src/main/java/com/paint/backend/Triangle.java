@@ -1,8 +1,6 @@
 package com.paint.backend;
 
 import java.util.Map;
-import java.awt.Point;
-import java.util.ArrayList;
 
 public class Triangle extends PolygonShape {
 
@@ -22,7 +20,7 @@ public class Triangle extends PolygonShape {
     public Shape clone() {
         Triangle clone = new Triangle(Map.of("center", getCenter(), "radius", getRadius(),
                 "rotation", getRotation(), "color", getColor(), "scaleX", getScaleX(),
-                "scaleY", getScaleY(), "sides", 3));
+                "scaleY", getScaleY(), "sides", getSides()));
 
         return clone;
     }
@@ -31,14 +29,14 @@ public class Triangle extends PolygonShape {
     public Map<String, Object> read() {
         return Map.of(
                 "id", getId(),
-                "type", "polygon",
+                "type", getType(),
                 "center", getCenter(),
                 "radius", getRadius(),
                 "scaleX", getScaleX(),
                 "scaleY", getScaleY(),
                 "rotation", getRotation(),
                 "color", getColor(),
-                "sides", 3);
+                "sides", getSides());
     }
 
 }
