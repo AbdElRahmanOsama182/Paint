@@ -241,6 +241,12 @@ const DrawingFunctions = {
                     stroke: this.currentColor,
                     strokeWidth: 5,
                 });
+            case 'Brush':
+                return new Konva.Line({
+                    points: [pos.x, pos.y, pos.x, pos.y],
+                    stroke: this.currentColor,
+                    strokeWidth: 5,
+                });
             default:
                 return new Konva.RegularPolygon({
                     x: pos.x,
@@ -373,6 +379,7 @@ const DrawingFunctions = {
                 break;
 
             case 'Line':
+            case 'Brush':
                 await fetch('http://localhost:8080/line', {
                     method: 'POST',
                     headers: {
@@ -561,6 +568,26 @@ const DrawingFunctions = {
                 break;
             case 'Line':
                 shape.points([shape.points()[0], shape.points()[1], pos.x, pos.y]);
+                await fetch(`http://localhost:8080/line/${shape.index}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: shape.index,
+                        points: shape.points(),
+                        color: shape.stroke(),
+                        scaleX: shape.scaleX(),
+                        scaleY: shape.scaleY(),
+                        rotation: shape.rotation(),
+                    }),
+                }).then(response => response.json())
+                    .then(data => {
+                    });
+                break;
+            case 'Brush':
+                let newPoints = shape.points().concat([pos.x, pos.y]);
+                shape.points(newPoints);
                 await fetch(`http://localhost:8080/line/${shape.index}`, {
                     method: 'PUT',
                     headers: {

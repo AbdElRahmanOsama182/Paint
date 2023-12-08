@@ -31,6 +31,7 @@
                 <button @click="drawShape('5')">⬠</button>
                 <button @click="drawShape('6')">⬡</button>
                 <button @click="drawShape('Line')">/</button>
+                <button @click="drawShape('Brush')">🖌</button>
             </div>
             <div class="curr">
                 <button class="customcolor" @click="changeShapeColor(currentColor)" @dblclick="showPicker"
