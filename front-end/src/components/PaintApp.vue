@@ -28,6 +28,8 @@
                 <button @click="drawShape('Rectangle')">▭</button>
                 <button @click="drawShape('Square')">◻</button>
                 <button @click="drawShape('Triangle')">△</button>
+                <button @click="drawShape('5')">⬠</button>
+                <button @click="drawShape('6')">⬡</button>
                 <button @click="drawShape('Line')">/</button>
             </div>
             <div class="curr">
