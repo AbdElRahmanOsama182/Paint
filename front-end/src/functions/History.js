@@ -1,6 +1,7 @@
 const HistoryFunctions = {
 
     async undo() {
+        this.resetButtons();
         if (this.historyIndex === 0) return;
         this.historyIndex -= 1;
         console.log("to copy", this.history)
@@ -10,6 +11,7 @@ const HistoryFunctions = {
         });
     },
     async redo() {
+        this.resetButtons();
         if (this.historyIndex === this.history.length - 1) return;
         this.historyIndex += 1;
         this.drawNewLayer()
