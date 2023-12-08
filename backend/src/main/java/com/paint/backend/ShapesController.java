@@ -1,18 +1,6 @@
 package com.paint.backend;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.awt.Point;
-import java.beans.XMLEncoder;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.lang.reflect.Array;
-
-import org.springframework.http.MediaType;
-
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,9 +10,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 @CrossOrigin(origins = { "http://localhost:8081" })
@@ -48,7 +33,7 @@ public class ShapesController {
     }
 
     @PostMapping("/polygon")
-    public PolygonShape createTriangle(@RequestBody PolygonShape data) {
+    public PolygonShape createPolygon(@RequestBody PolygonShape data) {
         return (PolygonShape) ShapeManager.getInstance().create("polygon", data.read());
     }
 

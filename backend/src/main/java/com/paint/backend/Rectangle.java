@@ -1,9 +1,6 @@
 package com.paint.backend;
 
 import java.util.Map;
-import java.awt.Point;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
 
 public class Rectangle implements Shape {
 

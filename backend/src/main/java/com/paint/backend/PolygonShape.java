@@ -1,8 +1,6 @@
 package com.paint.backend;
 
-import java.awt.Point;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
 import java.util.Map;
 
 public class PolygonShape implements Shape {

@@ -8,18 +8,18 @@
                     <button @click="loadFile('json')">JSON</button>
                     <button @click="loadFile('xml')">XML</button>
                 </div>
-                <button @click="undo()">undo</button>
+                <button @click="undo()">Undo</button>
                 <button @click="showSaveOptions">Save as</button>
                 <div v-if="showSaveDropdown" class="dropdown">
                     <button @click="saveFile('json')">JSON</button>
                     <button @click="saveFile('xml')">XML</button>
                     <button @click="saveFile('png')">Image</button>
                 </div>
-                <button @click="redo()">redo</button>
-                <button @click="deleteShape" :style="{ backgroundColor: deleteColor }">delete</button>
-                <button @click="cloneShape()" :style="{ backgroundColor: cloneColor }">clone</button>
-                <button @click="resizeShape" :style="{ backgroundColor: resizeColor }">resize</button>
-                <button @click="clearAll">clear</button>
+                <button @click="redo()">Redo</button>
+                <button @click="deleteShape" :style="{ backgroundColor: deleteColor }">Delete</button>
+                <button @click="cloneShape()" :style="{ backgroundColor: cloneColor }">Clone</button>
+                <button @click="resizeShape" :style="{ backgroundColor: resizeColor }">Resize</button>
+                <button @click="clearAll">Clear</button>
                 <button class="alien" @dblclick="clearAll">👽</button>
             </div>
             <div class="shapes">
@@ -189,7 +189,7 @@ export default {
                             .then(data => console.log("success", data));
                         break;
                     case "RegularPolygon":
-                        await fetch(`http://localhost:8080/triangle/${shape.index}`, {
+                        await fetch(`http://localhost:8080/polygon/${shape.index}`, {
                             method: "PUT",
                             headers: {
                                 "Content-Type": "application/json"
