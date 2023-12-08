@@ -428,7 +428,10 @@ const DrawingFunctions = {
 
         var index = this.layer.children.length - 1;
         if(this.isResizing){
-            index = this.clickedShapeIndex;
+            if(this.clickedShapeIndex !== null){
+                index = this.clickedShapeIndex;
+            }
+            else return;
         }
         const pos = this.stage.getPointerPosition();
         
