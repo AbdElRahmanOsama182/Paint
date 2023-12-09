@@ -65,6 +65,8 @@
 import Konva from "konva";
 import { DrawingFunctions } from "../functions/Drawing.js";
 import { HistoryFunctions } from "../functions/History.js";
+import { UpdateCircle, UpdateEllipse, UpdateLine, UpdatePolygon, UpdateRectangle } from "../api/Updates.js";
+
 export default {
     data() {
         return {
@@ -123,111 +125,19 @@ export default {
                 console.log(shape.className);
                 switch (shape.className) {
                     case "Circle":
-                        await fetch(`http://localhost:8080/circle/${shape.index}`, {
-                            method: "PUT",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                id: shape.index,
-                                center: {
-                                    x: shape.x(),
-                                    y: shape.y()
-                                },
-                                radius: shape.radius(),
-                                color: shape.fill(),
-                                scaleX: shape.scaleX(),
-                                scaleY: shape.scaleY(),
-                                rotation: shape.rotation()
-                            })
-                        })
-                            .then(res => res.json())
-                            .then(data => console.log("success", data));
+                        await UpdateCircle(shape);
                         break;
                     case "Ellipse":
-                        await fetch(`http://localhost:8080/ellipse/${shape.index}`, {
-                            method: "PUT",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                id: shape.index,
-                                center: {
-                                    x: shape.x(),
-                                    y: shape.y()
-                                },
-                                radiusX: shape.radiusX(),
-                                radiusY: shape.radiusY(),
-                                color: shape.fill(),
-                                scaleX: shape.scaleX(),
-                                scaleY: shape.scaleY(),
-                                rotation: shape.rotation()
-                            })
-                        })
-                            .then(res => res.json())
-                            .then(data => console.log("success", data));
+                        await UpdateEllipse(shape);
                         break;
                     case "Rect":
-                        await fetch(`http://localhost:8080/rectangle/${shape.index}`, {
-                            method: "PUT",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                id: shape.index,
-                                x: shape.x(),
-                                y: shape.y(),
-                                width: shape.width(),
-                                height: shape.height(),
-                                color: shape.fill(),
-                                scaleX: shape.scaleX(),
-                                scaleY: shape.scaleY(),
-                                rotation: shape.rotation()
-                            })
-                        })
-                            .then(res => res.json())
-                            .then(data => console.log("success", data));
+                        await UpdateRectangle(shape);
                         break;
                     case "RegularPolygon":
-                        await fetch(`http://localhost:8080/polygon/${shape.index}`, {
-                            method: "PUT",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                id: shape.index,
-                                center: {
-                                    x: shape.x(),
-                                    y: shape.y()
-                                },
-                                radius: shape.radius(),
-                                color: shape.fill(),
-                                sides: shape.sides(),
-                                scaleX: shape.scaleX(),
-                                scaleY: shape.scaleY(),
-                                rotation: shape.rotation()
-                            })
-                        })
-                            .then(res => res.json())
-                            .then(data => console.log("success", data));
+                        await UpdatePolygon(shape);
                         break;
                     case "Line":
-                        await fetch(`http://localhost:8080/line/${shape.index}`, {
-                            method: "PUT",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                id: shape.index,
-                                points: shape.points(),
-                                color: shape.stroke(),
-                                scaleX: shape.scaleX(),
-                                scaleY: shape.scaleY(),
-                                rotation: shape.rotation()
-                            })
-                        })
-                            .then(res => res.json())
-                            .then(data => console.log("success", data));
+                        await UpdateLine(shape);
                         break;
                 }
             }
