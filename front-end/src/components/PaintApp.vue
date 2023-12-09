@@ -66,6 +66,7 @@ import Konva from "konva";
 import { DrawingFunctions } from "../functions/Drawing.js";
 import { HistoryFunctions } from "../functions/History.js";
 import { UpdateCircle, UpdateEllipse, UpdateLine, UpdatePolygon, UpdateRectangle } from "../api/Updates.js";
+import {updateShape} from "../functions/Utils.js";
 
 export default {
     data() {
@@ -100,7 +101,10 @@ export default {
             clickedShapeIndex: null,
         };
     },
-    mounted() {
+    async mounted() {
+        await fetch("http://localhost:8080/layer/clear", {
+            method: "DELETE",
+        });
         this.stage = new Konva.Stage({
             container: ".canvas",
             width: this.CW,
@@ -122,7 +126,7 @@ export default {
             console.log(e.currentTarget.nodes());
             for (let key in e.currentTarget.nodes()) {
                 let shape = e.currentTarget.nodes()[key];
-                console.log(shape.className);
+                console.log(shape,shape.className);
                 switch (shape.className) {
                     case "Circle":
                         await UpdateCircle(shape);
@@ -315,10 +319,13 @@ export default {
             else if (this.isDrawing) this.startDrawing();
             else this.selectWindow();
         },
-        clearAll() {
+        async clearAll() {
             this.resetButtons();
             this.emptyTransformer();
             while (this.layer.children.length > 2) {
+                await fetch(`http://localhost:8080/shape/${this.layer.children[2].index}`, {
+                    method: "DELETE",
+                });
                 this.layer.children[2].destroy();
             }
             this.layer.draw();
@@ -503,7 +510,8 @@ export default {
         },
         emptyTransformer() {
             if (this.transformer) {
-                this.transformer.nodes().forEach(shape => shape.draggable(false));
+                this.transformer.nodes().forEach(shape => {shape.draggable(false);updateShape(shape)});
+                this.saveRecord();
                 this.transformer.nodes([]);
             }
         },
@@ -548,8 +556,10 @@ export default {
                     } else {
                         shape.fill(color);
                     }
+                    updateShape(shape);
                 });
                 this.layer.draw();
+                this.saveRecord();
             }
         },
         cloneSelected() {

@@ -126,6 +126,10 @@ public class ShapesController {
         System.out.println(ShapeManager.getInstance().getAllShapes());
     }
 
+    @DeleteMapping("/layer/clear")
+    public void clearHistory() {
+        ShapeManager.getInstance().clearHistory();
+    }
 
     // Save and load mapping
     @PostMapping("/save/{extension}")

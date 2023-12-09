@@ -5,6 +5,7 @@ import Konva from "konva";
 
 const DrawingFunctions = {
     createFromJson(shape) {
+        console.log("creating:",shape)
         let newShape;
         switch (shape.type) {
             case 'circle':
@@ -38,7 +39,7 @@ const DrawingFunctions = {
                 });
                 break;
             case 'polygon':
-                'triangle'
+            case 'triangle':
                 newShape = new Konva.RegularPolygon({
                     x: shape.center.x,
                     y: shape.center.y,
@@ -61,6 +62,7 @@ const DrawingFunctions = {
         newShape.scaleX(shape.scaleX);
         newShape.scaleY(shape.scaleY);
         newShape.rotation(shape.rotation);
+        console.log("new",newShape)
         this.layer.add(newShape);
         this.toBackend(newShape, shape.type);
     },
