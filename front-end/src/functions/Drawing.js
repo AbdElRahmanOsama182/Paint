@@ -1,7 +1,11 @@
+import { CreateCircle, CreateEllipse, CreateLine, CreatePolygon, CreateRectangle, CreateSquare, CreateTriangle } from "@/api/Creates";
+import { UpdateCircle, UpdateEllipse, UpdateLine, UpdatePolygon, UpdateRectangle } from "@/api/Updates";
 import Konva from "konva";
+
 
 const DrawingFunctions = {
     createFromJson(shape) {
+        console.log("creating:",shape)
         let newShape;
         switch (shape.type) {
             case 'circle':
@@ -35,7 +39,7 @@ const DrawingFunctions = {
                 });
                 break;
             case 'polygon':
-                 'triangle'
+            case 'triangle':
                 newShape = new Konva.RegularPolygon({
                     x: shape.center.x,
                     y: shape.center.y,
@@ -58,138 +62,29 @@ const DrawingFunctions = {
         newShape.scaleX(shape.scaleX);
         newShape.scaleY(shape.scaleY);
         newShape.rotation(shape.rotation);
+        console.log("new",newShape)
         this.layer.add(newShape);
         this.toBackend(newShape, shape.type);
     },
     async toBackend(shape, type) {
         switch (type) {
             case 'circle':
-                await fetch('http://localhost:8080/circle', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id: shape.index,
-                        center: {
-                            x: shape.x(),
-                            y: shape.y(),
-                        },
-                        radius: shape.radius(),
-                        color: shape.fill(),
-                        scaleX: shape.scaleX(),
-                        scaleY: shape.scaleY(),
-                        rotation: shape.rotation(),
-                    }),
-                }).then(response => response.json())
-                    .then(data => {
-                    });
+                await CreateCircle(shape);
                 break;
             case 'ellipse':
-                await fetch('http://localhost:8080/ellipse', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id: shape.index,
-                        center: {
-                            x: shape.x(),
-                            y: shape.y(),
-                        },
-                        radiusX: shape.radiusX(),
-                        radiusY: shape.radiusY(),
-                        color: shape.fill(),
-                        scaleX: shape.scaleX(),
-                        scaleY: shape.scaleY(),
-                        rotation: shape.rotation(),
-                    }),
-                }).then(response => response.json())
-                    .then(data => {
-                    });
+                await CreateEllipse(shape);
                 break;
             case 'square':
-                await fetch('http://localhost:8080/square', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id: shape.index,
-                        x: shape.x(),
-                        y: shape.y(),
-                        width: shape.width(),
-                        height: shape.height(),
-                        color: shape.fill(),
-                        scaleX: shape.scaleX(),
-                        scaleY: shape.scaleY(),
-                        rotation: shape.rotation(),
-                    }),
-                }).then(response => response.json())
-                    .then(data => {
-                    });
+                await CreateSquare(shape);
                 break;
             case 'rectangle':
-                await fetch('http://localhost:8080/rectangle', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id: shape.index,
-                        x: shape.x(),
-                        y: shape.y(),
-                        width: shape.width(),
-                        height: shape.height(),
-                        color: shape.fill(),
-                        scaleX: shape.scaleX(),
-                        scaleY: shape.scaleY(),
-                        rotation: shape.rotation(),
-                    }),
-                }).then(response => response.json())
-                    .then(data => {
-                    });
+                await CreateRectangle(shape);
                 break;
             case 'polygon':
-                await fetch('http://localhost:8080/polygon', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id: shape.index,
-                        center: {
-                            x: shape.x(),
-                            y: shape.y(),
-                        },
-                        radius: shape.radius(),
-                        color: shape.fill(),
-                        scaleX: shape.scaleX(),
-                        scaleY: shape.scaleY(),
-                        rotation: shape.rotation(),
-                        sides: shape.sides(),
-                    }),
-                }).then(response => response.json())
-                    .then(data => {
-                    });
+                await CreatePolygon(shape);
                 break;
             case 'line':
-                await fetch('http://localhost:8080/line', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id: shape.index,
-                        points: shape.points(),
-                        color: shape.stroke(),
-                        scaleX: shape.scaleX(),
-                        scaleY: shape.scaleY(),
-                        rotation: shape.rotation(),
-                    }),
-                }).then(response => response.json())
-                    .then(data => {
-                    });
+                await CreateLine(shape);
                 break;
         }
     },
@@ -265,160 +160,42 @@ const DrawingFunctions = {
         this.layer.draw();
         switch (this.drawingShape) {
             case 'Circle':
-                await fetch('http://localhost:8080/circle', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id: this.layer.children[this.layer.children.length - 1].index,
-                        center: {
-                            x: shape.x(),
-                            y: shape.y(),
-                        },
-                        radius: shape.radius(),
-                        color: shape.fill(),
-                        scaleX: shape.scaleX(),
-                        scaleY: shape.scaleY(),
-                        rotation: shape.rotation(),
-                    }),
-                }).then(response => response.json())
-                    .then(data => {
-                    });
+
+                await CreateCircle(shape, this.layer.children[this.layer.children.length - 1].index);
                 break;
 
             case 'Ellipse':
-                await fetch('http://localhost:8080/ellipse', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id: this.layer.children[this.layer.children.length - 1].index,
-                        center: {
-                            x: shape.x(),
-                            y: shape.y(),
-                        },
-                        radiusX: shape.radiusX(),
-                        radiusY: shape.radiusY(),
-                        color: shape.fill(),
-                        scaleX: shape.scaleX(),
-                        scaleY: shape.scaleY(),
-                        rotation: shape.rotation(),
-                    }),
-                }).then(response => response.json())
-                    .then(data => {
-                    });
+
+                await CreateEllipse(shape, this.layer.children[this.layer.children.length - 1].index);
                 break;
 
             case 'Square':
-                await fetch('http://localhost:8080/square', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id: this.layer.children[this.layer.children.length - 1].index,
-                        x: shape.x(),
-                        y: shape.y(),
-                        width: shape.width(),
-                        height: shape.height(),
-                        color: shape.fill(),
-                        scaleX: shape.scaleX(),
-                        scaleY: shape.scaleY(),
-                        rotation: shape.rotation(),
-                    }),
-                }).then(response => response.json())
-                    .then(data => {
-                    });
+
+
+                await CreateSquare(shape, this.layer.children[this.layer.children.length - 1].index);
                 break;
 
             case 'Rectangle':
-                await fetch('http://localhost:8080/rectangle', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id: this.layer.children[this.layer.children.length - 1].index,
-                        x: shape.x(),
-                        y: shape.y(),
-                        width: shape.width(),
-                        height: shape.height(),
-                        color: shape.fill(),
-                        scaleX: shape.scaleX(),
-                        scaleY: shape.scaleY(),
-                        rotation: shape.rotation(),
-                    }),
-                }).then(response => response.json())
-                    .then(data => {
-                    });
+
+
+                await CreateRectangle(shape, this.layer.children[this.layer.children.length - 1].index);
                 break;
 
             case 'Triangle':
-                await fetch('http://localhost:8080/triangle', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id: this.layer.children[this.layer.children.length - 1].index,
-                        center: {
-                            x: shape.x(),
-                            y: shape.y(),
-                        },
-                        radius: shape.radius(),
-                        color: shape.fill(),
-                        scaleX: shape.scaleX(),
-                        scaleY: shape.scaleY(),
-                        rotation: shape.rotation(),
-                    }),
-                }).then(response => response.json())
-                    .then(data => {
-                    });
+
+
+                await CreateTriangle(shape, this.layer.children[this.layer.children.length - 1].index);
                 break;
 
             case 'Line':
             case 'Brush':
-                await fetch('http://localhost:8080/line', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id: this.layer.children[this.layer.children.length - 1].index,
-                        points: shape.points(),
-                        color: shape.stroke(),
-                        scaleX: shape.scaleX(),
-                        scaleY: shape.scaleY(),
-                        rotation: shape.rotation(),
-                    }),
-                }).then(response => response.json())
-                    .then(data => {
-                    });
+
+
+                await CreateLine(shape, this.layer.children[this.layer.children.length - 1].index);
                 break;
             default:
-                await fetch('http://localhost:8080/polygon', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id: this.layer.children[this.layer.children.length - 1].index,
-                        center: {
-                            x: shape.x(),
-                            y: shape.y(),
-                        },
-                        radius: shape.radius(),
-                        color: shape.fill(),
-                        scaleX: shape.scaleX(),
-                        scaleY: shape.scaleY(),
-                        rotation: shape.rotation(),
-                        sides: shape.sides(),
-                    }),
-                }).then(response => response.json())
-                    .then(data => {
-                    });
+
+                await CreatePolygon(shape, this.layer.children[this.layer.children.length - 1].index);
                 break;
         }
         this.stage.on('mousemove', this.drawing);
@@ -434,200 +211,68 @@ const DrawingFunctions = {
         if (!this.isDrawing && !this.isResizing) return;
 
         var index = this.layer.children.length - 1;
-        if(this.isResizing){
-            if(this.clickedShapeIndex !== null){
+        if (this.isResizing) {
+            if (this.clickedShapeIndex !== null) {
                 index = this.clickedShapeIndex;
             }
             else return;
         }
         const pos = this.stage.getPointerPosition();
-        
+
         const shape = this.layer.children[index];
         switch (this.drawingShape) {
             case 'Circle':
                 const radius = Math.sqrt(Math.pow(pos.x - shape.x(), 2) + Math.pow(pos.y - shape.y(), 2));
                 shape.radius(radius);
-                await fetch(`http://localhost:8080/circle/${shape.index}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id: shape.index,
-                        center: {
-                            x: shape.x(),
-                            y: shape.y(),
-                        },
-                        radius: shape.radius(),
-                        color: shape.fill(),
-                        scaleX: shape.scaleX(),
-                        scaleY: shape.scaleY(),
-                        rotation: shape.rotation(),
-                    }),
-                }).then(response => response.json())
-                    .then(data => {
-                    });
+
+
+                await UpdateCircle(shape);
                 break;
             case 'Ellipse':
                 shape.radiusX(Math.abs(pos.x - shape.x()));
                 shape.radiusY(Math.abs(pos.y - shape.y()));
-                await fetch(`http://localhost:8080/ellipse/${shape.index}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id: shape.index,
-                        center: {
-                            x: shape.x(),
-                            y: shape.y(),
-                        },
-                        radiusX: shape.radiusX(),
-                        radiusY: shape.radiusY(),
-                        color: shape.fill(),
-                        scaleX: shape.scaleX(),
-                        scaleY: shape.scaleY(),
-                        rotation: shape.rotation(),
-                    }),
-                }).then(response => response.json())
-                    .then(data => {
-                    });
+
+
+                await UpdateEllipse(shape);
                 break;
             case 'Square':
                 const sideLength = Math.max(Math.abs(pos.x - shape.x()), Math.abs(pos.y - shape.y()));
                 shape.width(sideLength);
                 shape.height(sideLength);
-                await fetch(`http://localhost:8080/square/${shape.index}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id: shape.index,
-                        x: shape.x(),
-                        y: shape.y(),
-                        width: shape.width(),
-                        height: shape.height(),
-                        color: shape.fill(),
-                        scaleX: shape.scaleX(),
-                        scaleY: shape.scaleY(),
-                        rotation: shape.rotation(),
-                    }),
-                }).then(response => response.json())
-                    .then(data => {
-                    });
+
+                await UpdateRectangle(shape);
                 break;
             case 'Rectangle':
                 shape.width(Math.abs(pos.x - shape.x()));
                 shape.height(Math.abs(pos.y - shape.y()));
-                await fetch(`http://localhost:8080/rectangle/${shape.index}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id: shape.index,
 
-                        x: shape.x(),
-                        y: shape.y(),
 
-                        width: shape.width(),
-                        height: shape.height(),
-                        color: shape.fill(),
-                        scaleX: shape.scaleX(),
-                        scaleY: shape.scaleY(),
-                        rotation: shape.rotation(),
-                    }),
-                }).then(response => response.json())
-                    .then(data => {
-                    });
+                await UpdateRectangle(shape);
                 break;
             case 'Triangle':
                 shape.radius(Math.max(Math.abs(pos.x - shape.x()), Math.abs(pos.y - shape.y())));
-                await fetch(`http://localhost:8080/triangle/${shape.index}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id: shape.index,
-                        center: {
-                            x: shape.x(),
-                            y: shape.y(),
-                        },
-                        radius: shape.radius(),
-                        color: shape.fill(),
-                        scaleX: shape.scaleX(),
-                        scaleY: shape.scaleY(),
-                        rotation: shape.rotation(),
-                        sides: shape.sides(),
-                    }),
-                }).then(response => response.json())
-                    .then(data => {
-                    });
+
+
+                await UpdatePolygon(shape);
                 break;
             case 'Line':
                 shape.points([shape.points()[0], shape.points()[1], pos.x, pos.y]);
-                await fetch(`http://localhost:8080/line/${shape.index}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id: shape.index,
-                        points: shape.points(),
-                        color: shape.stroke(),
-                        scaleX: shape.scaleX(),
-                        scaleY: shape.scaleY(),
-                        rotation: shape.rotation(),
-                    }),
-                }).then(response => response.json())
-                    .then(data => {
-                    });
+
+
+                await UpdateLine(shape);
+
                 break;
             case 'Brush':
                 let newPoints = shape.points().concat([pos.x, pos.y]);
                 shape.points(newPoints);
-                await fetch(`http://localhost:8080/line/${shape.index}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id: shape.index,
-                        points: shape.points(),
-                        color: shape.stroke(),
-                        scaleX: shape.scaleX(),
-                        scaleY: shape.scaleY(),
-                        rotation: shape.rotation(),
-                    }),
-                }).then(response => response.json())
-                    .then(data => {
-                    });
+
+
+                await UpdateLine(shape);
                 break;
             default:
                 shape.radius(Math.max(Math.abs(pos.x - shape.x()), Math.abs(pos.y - shape.y())));
-                await fetch(`http://localhost:8080/polygon/${shape.index}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id: shape.index,
-                        center: {
-                            x: shape.x(),
-                            y: shape.y(),
-                        },
-                        radius: shape.radius(),
-                        color: shape.fill(),
-                        scaleX: shape.scaleX(),
-                        scaleY: shape.scaleY(),
-                        rotation: shape.rotation(),
-                        sides: shape.sides(),
-                    }),
-                }).then(response => response.json())
-                    .then(data => {
-                    });
+
+                await UpdatePolygon(shape);
                 break;
         }
         this.layer.batchDraw();

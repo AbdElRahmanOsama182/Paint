@@ -65,6 +65,9 @@
 import Konva from "konva";
 import { DrawingFunctions } from "../functions/Drawing.js";
 import { HistoryFunctions } from "../functions/History.js";
+import { UpdateCircle, UpdateEllipse, UpdateLine, UpdatePolygon, UpdateRectangle } from "../api/Updates.js";
+import {updateShape,createShape} from "../functions/Utils.js";
+
 export default {
     data() {
         return {
@@ -98,7 +101,10 @@ export default {
             clickedShapeIndex: null,
         };
     },
-    mounted() {
+    async mounted() {
+        await fetch("http://localhost:8080/layer/clear", {
+            method: "DELETE",
+        });
         this.stage = new Konva.Stage({
             container: ".canvas",
             width: this.CW,
@@ -120,114 +126,22 @@ export default {
             console.log(e.currentTarget.nodes());
             for (let key in e.currentTarget.nodes()) {
                 let shape = e.currentTarget.nodes()[key];
-                console.log(shape.className);
+                console.log(shape,shape.className);
                 switch (shape.className) {
                     case "Circle":
-                        await fetch(`http://localhost:8080/circle/${shape.index}`, {
-                            method: "PUT",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                id: shape.index,
-                                center: {
-                                    x: shape.x(),
-                                    y: shape.y()
-                                },
-                                radius: shape.radius(),
-                                color: shape.fill(),
-                                scaleX: shape.scaleX(),
-                                scaleY: shape.scaleY(),
-                                rotation: shape.rotation()
-                            })
-                        })
-                            .then(res => res.json())
-                            .then(data => console.log("success", data));
+                        await UpdateCircle(shape);
                         break;
                     case "Ellipse":
-                        await fetch(`http://localhost:8080/ellipse/${shape.index}`, {
-                            method: "PUT",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                id: shape.index,
-                                center: {
-                                    x: shape.x(),
-                                    y: shape.y()
-                                },
-                                radiusX: shape.radiusX(),
-                                radiusY: shape.radiusY(),
-                                color: shape.fill(),
-                                scaleX: shape.scaleX(),
-                                scaleY: shape.scaleY(),
-                                rotation: shape.rotation()
-                            })
-                        })
-                            .then(res => res.json())
-                            .then(data => console.log("success", data));
+                        await UpdateEllipse(shape);
                         break;
                     case "Rect":
-                        await fetch(`http://localhost:8080/rectangle/${shape.index}`, {
-                            method: "PUT",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                id: shape.index,
-                                x: shape.x(),
-                                y: shape.y(),
-                                width: shape.width(),
-                                height: shape.height(),
-                                color: shape.fill(),
-                                scaleX: shape.scaleX(),
-                                scaleY: shape.scaleY(),
-                                rotation: shape.rotation()
-                            })
-                        })
-                            .then(res => res.json())
-                            .then(data => console.log("success", data));
+                        await UpdateRectangle(shape);
                         break;
                     case "RegularPolygon":
-                        await fetch(`http://localhost:8080/polygon/${shape.index}`, {
-                            method: "PUT",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                id: shape.index,
-                                center: {
-                                    x: shape.x(),
-                                    y: shape.y()
-                                },
-                                radius: shape.radius(),
-                                color: shape.fill(),
-                                sides: shape.sides(),
-                                scaleX: shape.scaleX(),
-                                scaleY: shape.scaleY(),
-                                rotation: shape.rotation()
-                            })
-                        })
-                            .then(res => res.json())
-                            .then(data => console.log("success", data));
+                        await UpdatePolygon(shape);
                         break;
                     case "Line":
-                        await fetch(`http://localhost:8080/line/${shape.index}`, {
-                            method: "PUT",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                id: shape.index,
-                                points: shape.points(),
-                                color: shape.stroke(),
-                                scaleX: shape.scaleX(),
-                                scaleY: shape.scaleY(),
-                                rotation: shape.rotation()
-                            })
-                        })
-                            .then(res => res.json())
-                            .then(data => console.log("success", data));
+                        await UpdateLine(shape);
                         break;
                 }
             }
@@ -405,10 +319,13 @@ export default {
             else if (this.isDrawing) this.startDrawing();
             else this.selectWindow();
         },
-        clearAll() {
+        async clearAll() {
             this.resetButtons();
             this.emptyTransformer();
             while (this.layer.children.length > 2) {
+                await fetch(`http://localhost:8080/shape/${this.layer.children[this.layer.children.length-1].index}`, {
+                    method: "DELETE",
+                });
                 this.layer.children[2].destroy();
             }
             this.layer.draw();
@@ -593,7 +510,8 @@ export default {
         },
         emptyTransformer() {
             if (this.transformer) {
-                this.transformer.nodes().forEach(shape => shape.draggable(false));
+                this.transformer.nodes().forEach(shape => {shape.draggable(false);updateShape(shape)});
+                this.saveRecord();
                 this.transformer.nodes([]);
             }
         },
@@ -615,10 +533,14 @@ export default {
                 let clonedShapes = [];
                 this.emptyTransformer();
                 shapes.forEach((shape) => {
-                    clonedShapes.push(shape.clone().offsetX(50).offsetY(50));
+                    clonedShapes.push(shape.clone());
                 });
+                console.log(this.layer)
                 clonedShapes.forEach((shape) => {
+                    console.log(shape)
                     this.layer.add(shape);
+                    shape.index = this.layer.children.length - 1;
+                    createShape(shape);
                 });
                 this.transformer.nodes(clonedShapes);
                 this.moveSelectedShapes();
@@ -638,8 +560,10 @@ export default {
                     } else {
                         shape.fill(color);
                     }
+                    updateShape(shape);
                 });
                 this.layer.draw();
+                this.saveRecord();
             }
         },
         cloneSelected() {

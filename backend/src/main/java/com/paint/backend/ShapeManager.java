@@ -19,7 +19,7 @@ import java.io.ByteArrayInputStream;
 public class ShapeManager {
     private static ShapeManager instance;
     private static Map<Integer, Shape> shapes = new HashMap<>();
-    private static int nextHistory = -1;
+    private static int nextHistory = 0;
     private static ArrayList<Map<Integer, Shape>> history = new ArrayList<>();
 
     private ShapeManager() {
@@ -28,6 +28,8 @@ public class ShapeManager {
     public static synchronized ShapeManager getInstance() {
         if (instance == null) {
             instance = new ShapeManager();
+            instance.history.add(new HashMap<>());
+            instance.nextHistory++;
         }
         return instance;
     }
@@ -48,6 +50,9 @@ public class ShapeManager {
 
     public static void delete(int id) {
         shapes.remove(id);
+        System.out.println("delete");
+        System.out.println(id);
+        System.out.println(shapes);
     }
 
     public static Shape clone(int id, int newId) {
@@ -71,9 +76,9 @@ public class ShapeManager {
     public static void clear() {
         shapes.clear();
         shapes = new HashMap<>();
-        nextHistory = -1;
-        instance = null;
-        history.clear();
+        // nextHistory = -1;
+        // instance = null;
+        // history.clear();
     }
 
     public static Map<Integer, Shape> getAllShapes() {
@@ -86,20 +91,27 @@ public class ShapeManager {
 
     public static void undo() {
         System.out.println("undo");
-        System.out.println(shapes);
+        System.out.println("old");
 
-        if (nextHistory > 0) {
+        System.out.println(shapes);
+        System.out.println(nextHistory);
+
+        if (nextHistory >1) {
             nextHistory--;
-            shapes = history.get(nextHistory);
+            shapes = history.get(nextHistory-1);
+            System.out.println("history");
+            System.out.println(history);
         }
+        System.out.println("new");
+        System.out.println(shapes);
     }
 
     public static void redo() {
         System.out.println("redo");
         System.out.println(shapes);
-        if (nextHistory < history.size() - 1) {
-            nextHistory++;
+        if (nextHistory < history.size() ) {
             shapes = history.get(nextHistory);
+            nextHistory++;
         }
     }
 
@@ -107,10 +119,22 @@ public class ShapeManager {
         System.out.println("saveRecord");
         System.out.println(history);
         nextHistory++;
-        history.add(new HashMap<>(shapes));
-        if (nextHistory < history.size() - 1) {
-            history.subList(nextHistory + 1, history.size()).clear();
+        System.out.println(nextHistory);
+        history.add(new HashMap<>());
+        history.get(history.size()-1).putAll(shapes);
+        if (nextHistory < history.size() ) {
+            history.subList(nextHistory , history.size()).clear();
         }
+    }
+
+    public void clearHistory() {
+        history.clear();
+        shapes.clear();
+        shapes = new HashMap<>();
+        history.add(new HashMap<>());
+        nextHistory = 1;
+        System.out.println(history);
+        System.out.println(shapes);
     }
 
     public ResponseEntity<String> save(String extension) {

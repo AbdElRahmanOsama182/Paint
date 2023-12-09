@@ -89,21 +89,27 @@ public class ShapesController {
         return (Ellipse) ShapeManager.getInstance().update(Integer.parseInt(id), data.read());
     }
 
+
+    // Get mapping
     @GetMapping("/shape/{id}")
     public Map<String, Object> read(@PathVariable("id") String id) {
         return ShapeManager.getInstance().read(Integer.parseInt(id));
     }
 
+    // Delete mapping
     @DeleteMapping("/shape/{id}")
     public void delete(@PathVariable("id") String id) {
         ShapeManager.getInstance().delete(Integer.parseInt(id));
     }
 
+    // copy mapping
     @PostMapping("/shape/{id}/copy")
     public Map<String, Object> copy(@PathVariable("id") String id, @RequestBody Map<String, Integer> payload) {
         return ShapeManager.getInstance().clone(Integer.parseInt(id), (Integer) payload.get("newId")).read();
     }
 
+
+    // Layer mapping
     @PostMapping("/layer/record")
     public void saveRecord() {
         ShapeManager.getInstance().saveRecord();
@@ -120,6 +126,12 @@ public class ShapesController {
         System.out.println(ShapeManager.getInstance().getAllShapes());
     }
 
+    @DeleteMapping("/layer/clear")
+    public void clearHistory() {
+        ShapeManager.getInstance().clearHistory();
+    }
+
+    // Save and load mapping
     @PostMapping("/save/{extension}")
     public ResponseEntity<String> save(@PathVariable("extension") String extension) {
         return ShapeManager.getInstance().save(extension);
