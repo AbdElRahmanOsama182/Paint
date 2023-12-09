@@ -66,7 +66,7 @@ import Konva from "konva";
 import { DrawingFunctions } from "../functions/Drawing.js";
 import { HistoryFunctions } from "../functions/History.js";
 import { UpdateCircle, UpdateEllipse, UpdateLine, UpdatePolygon, UpdateRectangle } from "../api/Updates.js";
-import {updateShape} from "../functions/Utils.js";
+import {updateShape,createShape} from "../functions/Utils.js";
 
 export default {
     data() {
@@ -323,7 +323,7 @@ export default {
             this.resetButtons();
             this.emptyTransformer();
             while (this.layer.children.length > 2) {
-                await fetch(`http://localhost:8080/shape/${this.layer.children[2].index}`, {
+                await fetch(`http://localhost:8080/shape/${this.layer.children[this.layer.children.length-1].index}`, {
                     method: "DELETE",
                 });
                 this.layer.children[2].destroy();
@@ -533,10 +533,14 @@ export default {
                 let clonedShapes = [];
                 this.emptyTransformer();
                 shapes.forEach((shape) => {
-                    clonedShapes.push(shape.clone().offsetX(50).offsetY(50));
+                    clonedShapes.push(shape.clone());
                 });
+                console.log(this.layer)
                 clonedShapes.forEach((shape) => {
+                    console.log(shape)
                     this.layer.add(shape);
+                    shape.index = this.layer.children.length - 1;
+                    createShape(shape);
                 });
                 this.transformer.nodes(clonedShapes);
                 this.moveSelectedShapes();

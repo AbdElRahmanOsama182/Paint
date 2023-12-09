@@ -240,7 +240,7 @@ const DrawingFunctions = {
                 shape.width(sideLength);
                 shape.height(sideLength);
 
-                await UpdateSquare(shape);
+                await UpdateRectangle(shape);
                 break;
             case 'Rectangle':
                 shape.width(Math.abs(pos.x - shape.x()));

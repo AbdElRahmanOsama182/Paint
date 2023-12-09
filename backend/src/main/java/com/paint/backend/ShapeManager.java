@@ -50,6 +50,9 @@ public class ShapeManager {
 
     public static void delete(int id) {
         shapes.remove(id);
+        System.out.println("delete");
+        System.out.println(id);
+        System.out.println(shapes);
     }
 
     public static Shape clone(int id, int newId) {
@@ -73,9 +76,9 @@ public class ShapeManager {
     public static void clear() {
         shapes.clear();
         shapes = new HashMap<>();
-        nextHistory = -1;
-        instance = null;
-        history.clear();
+        // nextHistory = -1;
+        // instance = null;
+        // history.clear();
     }
 
     public static Map<Integer, Shape> getAllShapes() {
@@ -129,7 +132,7 @@ public class ShapeManager {
         shapes.clear();
         shapes = new HashMap<>();
         history.add(new HashMap<>());
-        nextHistory = 0;
+        nextHistory = 1;
         System.out.println(history);
         System.out.println(shapes);
     }

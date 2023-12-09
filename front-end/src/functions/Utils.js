@@ -1,6 +1,6 @@
 import Konva from 'konva'
 import { UpdateCircle, UpdateEllipse, UpdateLine, UpdatePolygon, UpdateRectangle } from "@/api/Updates";
-
+import {CreateCircle,CreateEllipse,CreateLine,CreatePolygon,CreateRectangle} from '@/api/Creates'
 
 export const getType=(shape)=>{
     if(shape instanceof Konva.Circle)
@@ -34,6 +34,28 @@ export const updateShape=(shape)=>{
             break;
         case 'line':
             UpdateLine(shape);
+            break;
+        default:
+            return;
+    }
+}
+
+export const createShape=(shape,id)=>{
+    switch(getType(shape)){
+        case 'circle':
+            CreateCircle(shape,id);
+            break;
+        case 'rectangle':
+            CreateRectangle(shape,id);
+            break;
+        case 'ellipse':
+            CreateEllipse(shape,id);
+            break;
+        case 'polygon':
+            CreatePolygon(shape,id);
+            break;
+        case 'line':
+            CreateLine(shape,id);
             break;
         default:
             return;
