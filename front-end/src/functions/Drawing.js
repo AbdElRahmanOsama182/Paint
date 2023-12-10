@@ -295,6 +295,12 @@ const DrawingFunctions = {
 
                 await UpdateLine(shape);
                 break;
+            case 'Image':
+                shape.width(Math.abs(pos.x - shape.x()));
+                shape.height(Math.abs(pos.y - shape.y()));
+
+                await UpdateRectangle(shape);
+                break;
             default:
                 shape.radius(Math.max(Math.abs(pos.x - shape.x()), Math.abs(pos.y - shape.y())));
 

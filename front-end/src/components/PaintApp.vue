@@ -20,7 +20,7 @@
                 <button @click="cloneShape()" :style="{ backgroundColor: cloneColor }">Clone</button>
                 <button @click="resizeShape" :style="{ backgroundColor: resizeColor }">Resize</button>
                 <button @click="clearAll">Clear</button>
-                <button class="alien" @dblclick="clearAll" @click="addImage">👽</button>
+                <button class="alien" @click="addImage">👽</button>
                 <button class="alien" @click="generateImage">🤖</button>
                 <input v-if="displayPrompt" type="text" v-model="prompt" :style="{ border: '2px solid white', borderRadius: 3 }"
                     placeholder="beautiful girl" />
@@ -439,6 +439,7 @@ export default {
             this.isResizing = false;
             this.showLoadDropdown = false;
             this.showSaveDropdown = false;
+            this.displayPrompt = false;
             this.deleteColor = "white";
             this.cloneColor = "white";
             this.resizeColor = "white";
@@ -484,6 +485,7 @@ export default {
             this.setResize(!this.isResizing);
             this.showLoadDropdown = false;
             this.showSaveDropdown = false;
+            this.displayPrompt = false;
         },
         cloneShape() {
             this.isClonable = !this.isClonable;
@@ -497,6 +499,7 @@ export default {
             }
             this.showLoadDropdown = false;
             this.showSaveDropdown = false;
+            this.displayPrompt = false;
             this.emptyTransformer();
             if (this.isClonable) this.cloneColor = "green";
             else this.cloneColor = "white";
@@ -514,6 +517,7 @@ export default {
             }
             this.showLoadDropdown = false;
             this.showSaveDropdown = false;
+            this.displayPrompt = false;
             if (this.isDeletable) this.deleteColor = "red";
             else this.deleteColor = "white";
         },
@@ -657,6 +661,22 @@ export default {
             return name;
         },
         async addImage() {
+            this.emptyTransformer();
+            if (this.isDeletable) {
+                this.isDeletable = !this.isDeletable;
+                this.deleteColor = "white";
+            }
+            if (this.isClonable) {
+                this.isClonable = !this.isClonable;
+                this.cloneColor = "white";
+            }
+            if (this.isResizing) {
+                this.isResizing = !this.isResizing;
+                this.resizeColor = "white";
+            }
+            this.showLoadDropdown = false;
+            this.showSaveDropdown = false;
+            this.displayPrompt = false;
             try {
                 const [fileHandle] = await window.showOpenFilePicker({
                     types: [
@@ -720,6 +740,21 @@ export default {
             }
         },
         async generateImage() {
+            this.emptyTransformer();
+            if (this.isDeletable) {
+                this.isDeletable = !this.isDeletable;
+                this.deleteColor = "white";
+            }
+            if (this.isClonable) {
+                this.isClonable = !this.isClonable;
+                this.cloneColor = "white";
+            }
+            if (this.isResizing) {
+                this.isResizing = !this.isResizing;
+                this.resizeColor = "white";
+            }
+            this.showLoadDropdown = false;
+            this.showSaveDropdown = false;
             if (this.displayPrompt) {
                 fal.config({
                     // Can also be auto-configured using environment variables:
@@ -778,6 +813,7 @@ export default {
                     console.log(this.layer.children)
 
                     // this.saveRecord();
+                    this.displayPrompt = false;
                 };
 
             } else {
