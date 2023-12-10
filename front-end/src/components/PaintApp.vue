@@ -24,6 +24,7 @@
                 <button class="alien" @click="generateImage">🤖</button>
                 <input v-if="displayPrompt" type="text" v-model="prompt" :style="{ border: '2px solid white', borderRadius: 3 }"
                     placeholder="beautiful girl" />
+
             </div>
             <div class="shapes">
                 <button @click="drawShape('Circle')">◯</button>
@@ -315,6 +316,7 @@ export default {
                 for (let shape in shapesArray) {
                     console.log(shape)
                     await this.createFromJson(shapesArray[shape]);
+
 
 
                 }
@@ -783,6 +785,7 @@ export default {
             }
 
         },
+
 
         ...HistoryFunctions,
         ...DrawingFunctions
