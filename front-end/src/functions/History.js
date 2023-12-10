@@ -1,3 +1,5 @@
+import { API_ROOT } from "@/config";
+
 const HistoryFunctions = {
 
     async undo() {
@@ -6,7 +8,7 @@ const HistoryFunctions = {
         this.historyIndex -= 1;
         console.log("to copy", this.history)
         this.drawNewLayer()
-        await fetch("http://localhost:8080/layer/undo", {
+        await fetch(API_ROOT+"/layer/undo", {
             method: "POST",
         });
     },
@@ -15,7 +17,7 @@ const HistoryFunctions = {
         if (this.historyIndex === this.history.length - 1) return;
         this.historyIndex += 1;
         this.drawNewLayer()
-        await fetch("http://localhost:8080/layer/redo", {
+        await fetch(API_ROOT+"/layer/redo", {
             method: "POST",
         });
     },
@@ -66,7 +68,7 @@ const HistoryFunctions = {
         this.history.push(newLayer);
         this.historyIndex += 1;
         console.log(this.historyIndex);
-        await fetch("http://localhost:8080/layer/record", {
+        await fetch(API_ROOT+"/layer/record", {
             method: "POST",
         });
     },

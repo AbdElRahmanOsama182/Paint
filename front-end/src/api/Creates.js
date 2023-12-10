@@ -1,6 +1,7 @@
+import { API_ROOT } from "@/config";
 export const CreateCircle = async (shape, id) => {
     console.log(id)
-    return await fetch(`http://localhost:8080/circle`, {
+    return await fetch(API_ROOT+`/circle`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -23,7 +24,7 @@ export const CreateCircle = async (shape, id) => {
 }
 
 export const CreateRectangle = async (shape, id) => {
-    return await fetch(`http://localhost:8080/rectangle`, {
+    return await fetch(API_ROOT+`/rectangle`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -46,7 +47,7 @@ export const CreateRectangle = async (shape, id) => {
 }
 
 export const CreateImage = async (shape, id) => {
-    return await fetch(`http://localhost:8080/image`, {
+    return await fetch(API_ROOT+`/image`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -69,7 +70,7 @@ export const CreateImage = async (shape, id) => {
 }
 
 export const CreateEllipse = async (shape, id) => {
-    return await fetch(`http://localhost:8080/ellipse`, {
+    return await fetch(API_ROOT+`/ellipse`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -94,7 +95,7 @@ export const CreateEllipse = async (shape, id) => {
 }
 
 export const CreateLine = async (shape, id) => {
-    return await fetch(`http://localhost:8080/line`, {
+    return await fetch(API_ROOT+`/line`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -114,7 +115,7 @@ export const CreateLine = async (shape, id) => {
 }
 
 export const CreatePolygon = async (shape, id) => {
-    return await fetch(`http://localhost:8080/polygon`, {
+    return await fetch(API_ROOT+`/polygon`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -139,7 +140,7 @@ export const CreatePolygon = async (shape, id) => {
 }
 
 export const CreateTriangle = async (shape, id) => {
-    return await fetch(`http://localhost:8080/triangle`, {
+    return await fetch(API_ROOT+`/triangle`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -163,7 +164,7 @@ export const CreateTriangle = async (shape, id) => {
         .then(data => { console.log("created"); return data });
 }
 export const CreateSquare = async (shape, id) => {
-    return await fetch(`http://localhost:8080/square`, {
+    return await fetch(API_ROOT+`/square`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

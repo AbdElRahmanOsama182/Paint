@@ -74,6 +74,7 @@ import { CreateImage } from "../api/Creates.js";
 import { updateShape, createShape } from "../functions/Utils.js";
 import * as fal from "@fal-ai/serverless-client";
 import { downloadImage } from "../functions/Utils.js";
+import {API_ROOT} from "../config.js";
 
 
 export default {
@@ -112,7 +113,7 @@ export default {
         };
     },
     async mounted() {
-        await fetch("http://localhost:8080/layer/clear", {
+        await fetch(API_ROOT+"/layer/clear", {
             method: "DELETE",
         });
         this.stage = new Konva.Stage({
@@ -229,7 +230,7 @@ export default {
                     this.showSaveDropdown = false;
                     return;
                 }
-                const response = await fetch(`http://localhost:8080/save/${extension}`, {
+                const response = await fetch(API_ROOT+`/save/${extension}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json', // Set the content type
@@ -292,7 +293,7 @@ export default {
                     return;
                 }
                 console.log('File loaded successfully:', contents);
-                const response = await fetch(`http://localhost:8080/load/${extension}`, {
+                const response = await fetch(API_ROOT+`/load/${extension}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': extension === 'json' ? 'application/json' : 'application/xml',
@@ -340,7 +341,7 @@ export default {
             this.resetButtons();
             this.emptyTransformer();
             while (this.layer.children.length > 2) {
-                await fetch(`http://localhost:8080/shape/${this.layer.children[this.layer.children.length - 1].index}`, {
+                await fetch(API_ROOT+`/shape/${this.layer.children[this.layer.children.length - 1].index}`, {
                     method: "DELETE",
                 });
                 this.layer.children[2].destroy();
@@ -535,7 +536,7 @@ export default {
         async deleteSelectedShapes() {
             if (this.transformer) {
                 this.transformer.nodes().forEach(async (shape) => {
-                    await fetch(`http://localhost:8080/shape/${shape.index}`, {
+                    await fetch(API_ROOT+`/shape/${shape.index}`, {
                         method: "DELETE",
                     });
                     shape.destroy();

@@ -1,5 +1,7 @@
+import { API_ROOT } from "@/config";
+
 export const UpdateCircle = async (shape) => {
-    return await fetch(`http://localhost:8080/circle/${shape.index}`, {
+    return await fetch(API_ROOT+`/circle/${shape.index}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json"
@@ -22,7 +24,7 @@ export const UpdateCircle = async (shape) => {
 }
 
 export const UpdateRectangle = async (shape) => {
-    return await fetch(`http://localhost:8080/rectangle/${shape.index}`, {
+    return await fetch(API_ROOT+`/rectangle/${shape.index}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json"
@@ -44,7 +46,7 @@ export const UpdateRectangle = async (shape) => {
 }
 
 export const UpdateImage = async (shape) => {
-    return await fetch(`http://localhost:8080/image/${shape.index}`, {
+    return await fetch(API_ROOT+`/image/${shape.index}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json"
@@ -65,7 +67,7 @@ export const UpdateImage = async (shape) => {
         .then(data => { console.log("updated"); return data });
 }
 export const UpdateEllipse = async (shape) => {
-    return await fetch(`http://localhost:8080/ellipse/${shape.index}`, {
+    return await fetch(API_ROOT+`/ellipse/${shape.index}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json"
@@ -89,7 +91,7 @@ export const UpdateEllipse = async (shape) => {
 }
 
 export const UpdatePolygon = async (shape) => {
-    return await fetch(`http://localhost:8080/polygon/${shape.index}`, {
+    return await fetch(API_ROOT+`/polygon/${shape.index}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json"
@@ -113,7 +115,7 @@ export const UpdatePolygon = async (shape) => {
 }
 
 export const UpdateLine = async (shape) => {
-    return await fetch(`http://localhost:8080/line/${shape.index}`, {
+    return await fetch(API_ROOT+`/line/${shape.index}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json"
