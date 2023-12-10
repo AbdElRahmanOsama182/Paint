@@ -23,7 +23,7 @@
                 <button class="alien" @click="addImage">👽</button>
                 <button class="alien" @click="generateImage">🤖</button>
                 <input v-if="displayPrompt" type="text" v-model="prompt" :style="{ border: '2px solid white', borderRadius: 3 }"
-                    placeholder="beautiful girl" />
+                    placeholder="Draw Something" />
 
             </div>
             <div class="shapes">
