@@ -21,6 +21,10 @@
                 <button @click="resizeShape" :style="{ backgroundColor: resizeColor }">Resize</button>
                 <button @click="clearAll">Clear</button>
                 <button class="alien" @dblclick="clearAll" @click="addImage">👽</button>
+                <button class="alien" @click="generateImage">🤖</button>
+                <input v-if="displayPrompt" type="text" v-model="prompt" :style="{ border: '2px solid white', borderRadius: 3 }"
+                    placeholder="beautiful girl" />
+
             </div>
             <div class="shapes">
                 <button @click="drawShape('Circle')">◯</button>
@@ -68,6 +72,9 @@ import { HistoryFunctions } from "../functions/History.js";
 import { UpdateCircle, UpdateEllipse, UpdateLine, UpdatePolygon, UpdateRectangle } from "../api/Updates.js";
 import { CreateImage } from "../api/Creates.js";
 import { updateShape, createShape } from "../functions/Utils.js";
+import * as fal from "@fal-ai/serverless-client";
+import { downloadImage } from "../functions/Utils.js";
+
 
 export default {
     data() {
@@ -100,6 +107,8 @@ export default {
             isResizing: false,
             resizeColor: 'white',
             clickedShapeIndex: null,
+            prompt: "",
+            displayPrompt: false
         };
     },
     async mounted() {
@@ -304,10 +313,11 @@ export default {
                 // shapesArray.forEach(async (shape) => {
                 //     await this.createFromJson(shape);
                 // });
-                for(let shape in shapesArray){
+                for (let shape in shapesArray) {
                     console.log(shape)
                     await this.createFromJson(shapesArray[shape]);
-                    
+
+
 
                 }
                 console.log(this.layer.children);
@@ -695,6 +705,7 @@ export default {
                         // createShape(img);
                         this.layer.draw();
 
+
                         console.log(this.layer.children)
 
                     }
@@ -708,6 +719,74 @@ export default {
                 console.error('Error selecting image:', error);
             }
         },
+        async generateImage() {
+            if (this.displayPrompt) {
+                fal.config({
+                    // Can also be auto-configured using environment variables:
+                    // Either a single FAL_KEY or a combination of FAL_KEY_ID and FAL_KEY_SECRET
+                    credentials: '8b5d65b5-4e5c-4c83-bdf8-c0ed9708169d:3cdc6ea7bbade340ac9ee6a0df89b894',
+                });
+                const result = await fal.subscribe("110602490-lora", {
+                    input: {
+                        model_name: "stabilityai/stable-diffusion-xl-base-1.0",
+                        prompt: this.prompt,
+                    },
+                    logs: true,
+                    onQueueUpdate: (update) => {
+                        if (update.status === "IN_PROGRESS") {
+                            update.logs.map((log) => log.message).forEach(console.log);
+                        }
+                    },
+                });
+                // const result = {
+                //     "images": [
+                //         {
+                //             "url": "https://storage.googleapis.com/fal_file_storage/59eba1c100d44b68b5c81c0da9c6157b.png?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=distributed-worker%40isolate-dev-hot-rooster.iam.gserviceaccount.com%2F20231210%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20231210T012841Z&X-Goog-Expires=172800&X-Goog-SignedHeaders=host&X-Goog-Signature=29b9d571ff4587b507ae92ea654da98950993f8c30ddf123d0dd71a4d9fae4b3089abdb035c3c1ea9e2f4036c7219624ce39baba5d02ff0f582129356954272f24a6fb387950c345aad5a2ad950d70c2c4f1d5d86626107457382d4f82bebb1814dddcdf38b2caf860fde0b8bdd8d370d4884378c124dbb30492bdab75aa61d20570f9596e8ca3f47a37d7b78b922b10d051bd0a9b508493a05f5e168e2172acb91fcf3b2588b1041e4be7809e0af5fc2b9be6798975eba512a5358dc978fe0f73eb4385c484f9f7b1be5a09e9a1b62a94609ac10a10403aaecddd2f00af5e5eb21ca09d7c167ebb717681b651717a90d7ae3d98326af798222703b77a9f8d5e",
+                //             "content_type": "image/png",
+                //             "file_name": "59eba1c100d44b68b5c81c0da9c6157b.png",
+                //             "file_size": 939190,
+                //             "width": 544,
+                //             "height": 960
+                //         }
+                //     ],
+                //     "seed": 3088576288
+                // }
+                console.log(this.prompt)
+                const image = new Image();
+                image.src = result.images[0].url;
+                image.onload = () => {
+
+                    console.log(image)
+                    // add image
+                    const img = new Konva.Image({
+                        x: 500,
+                        y: 200,
+                        image: image,
+                        draggable: false,
+                        width: image.width / 2,
+                        height: image.height / 2,
+                    });
+                    console.log("here")
+                    this.layer.add(img);
+                    console.log("There")
+                    CreateImage(img);
+                    // img.index = this.layer.children.length - 1;
+                    // createShape(img);
+                    this.layer.draw();
+                    console.log(this.layer.children)
+
+                    console.log(this.layer.children)
+
+                    // this.saveRecord();
+                };
+
+            } else {
+                this.displayPrompt = true;
+            }
+
+        },
+
+
         ...HistoryFunctions,
         ...DrawingFunctions
     }

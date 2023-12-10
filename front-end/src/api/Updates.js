@@ -43,6 +43,27 @@ export const UpdateRectangle = async (shape) => {
         .then(data => { console.log("updated"); return data });
 }
 
+export const UpdateImage = async (shape) => {
+    return await fetch(`http://localhost:8080/image/${shape.index}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            id: shape.index,
+            x: shape.x(),
+            y: shape.y(),
+            width: shape.width(),
+            height: shape.height(),
+            src: shape.image().src,
+            scaleX: shape.scaleX(),
+            scaleY: shape.scaleY(),
+            rotation: shape.rotation()
+        })
+    })
+        .then(res => res.json())
+        .then(data => { console.log("updated"); return data });
+}
 export const UpdateEllipse = async (shape) => {
     return await fetch(`http://localhost:8080/ellipse/${shape.index}`, {
         method: "PUT",

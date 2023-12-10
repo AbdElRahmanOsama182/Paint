@@ -7,7 +7,9 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "@fal-ai/serverless-client": "^0.7.0",
     "core-js": "^3.8.3",
+    "html2canvas": "^1.4.1",
     "konva": "^9.2.3",
     "vue": "^3.2.13",
     "vuetify": "^3.4.4"
