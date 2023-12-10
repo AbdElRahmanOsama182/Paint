@@ -1,6 +1,6 @@
 import Konva from 'konva'
-import { UpdateCircle, UpdateEllipse, UpdateLine, UpdatePolygon, UpdateRectangle } from "@/api/Updates";
-import {CreateCircle,CreateEllipse,CreateLine,CreatePolygon,CreateRectangle} from '@/api/Creates'
+import { UpdateCircle, UpdateEllipse, UpdateLine, UpdatePolygon, UpdateRectangle, UpdateImage } from "@/api/Updates";
+import {CreateCircle,CreateEllipse,CreateLine,CreatePolygon,CreateRectangle, CreateImage} from '@/api/Creates'
 
 export const getType=(shape)=>{
     if(shape instanceof Konva.Circle)
@@ -13,6 +13,8 @@ export const getType=(shape)=>{
         return 'polygon';
     else if(shape instanceof Konva.Line)
         return 'line';
+    else if (shape instanceof Konva.Image)
+        return 'image';
     else
         return 'unknown';
 
@@ -34,6 +36,9 @@ export const updateShape=(shape)=>{
             break;
         case 'line':
             UpdateLine(shape);
+            break;
+        case 'image':
+            UpdateImage(shape);
             break;
         default:
             return;
@@ -57,6 +62,9 @@ export const createShape=(shape,id)=>{
         case 'line':
             CreateLine(shape,id);
             break;
+        case 'image':
+            CreateImage(shape,id);
+            break;
         default:
             return;
     }
@@ -79,3 +87,34 @@ export const forceLoadImage=(image)=>{
         // Set the src attribute to the Base64 data URL
       });
 }
+
+export const downloadImage=async(url, fileName)=> {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+  
+      // Create a link element
+      const link = document.createElement('a');
+  
+      // Create a Blob URL for the downloaded image
+      const blobUrl = URL.createObjectURL(blob);
+  
+      // Set the link attributes
+      link.href = blobUrl;
+      link.download = fileName || 'downloaded_image';
+  
+      // Append the link to the document
+      document.body.appendChild(link);
+  
+      // Trigger a click event on the link
+      link.click();
+  
+      // Remove the link from the document
+      document.body.removeChild(link);
+  
+      // Revoke the Blob URL to free up resources
+      URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error('Error downloading image:', error);
+    }
+  }
