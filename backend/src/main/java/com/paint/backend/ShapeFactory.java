@@ -23,6 +23,8 @@ public class ShapeFactory {
             shape = new Ellipse(attributes);
         } else if (shapeType.equalsIgnoreCase("POLYGON")) {
             shape = new PolygonShape(attributes);
+        }else if (shapeType.equalsIgnoreCase("IMAGE")) {
+            shape = new ImageShape(attributes);
         }
         ShapeManager.getInstance().addShape(shape);
         return shape;

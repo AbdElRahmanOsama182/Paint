@@ -40,6 +40,7 @@ const HistoryFunctions = {
     async saveRecord() {
         if (this.history.length > 0) {
             const historyPop = this.history[this.historyIndex];
+            console.log(this.layer.children, historyPop.children)
             if (this.layer.children.length === historyPop.children.length) {
                 const isEqual = this.layer.children.every((child, index) => {
                     if (child.index === 0 || child.index === 1) {

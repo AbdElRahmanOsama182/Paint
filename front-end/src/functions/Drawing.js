@@ -1,11 +1,12 @@
-import { CreateCircle, CreateEllipse, CreateLine, CreatePolygon, CreateRectangle, CreateSquare, CreateTriangle } from "@/api/Creates";
+import { CreateCircle, CreateEllipse, CreateLine, CreatePolygon, CreateRectangle, CreateSquare, CreateTriangle, CreateImage } from "@/api/Creates";
 import { UpdateCircle, UpdateEllipse, UpdateLine, UpdatePolygon, UpdateRectangle } from "@/api/Updates";
+import { forceLoadImage } from "@/functions/Utils";
 import Konva from "konva";
 
 
 const DrawingFunctions = {
-    createFromJson(shape) {
-        console.log("creating:",shape)
+    async createFromJson(shape) {
+        console.log("creating:", shape)
         let newShape;
         switch (shape.type) {
             case 'circle':
@@ -55,6 +56,28 @@ const DrawingFunctions = {
                     strokeWidth: 5,
                 });
                 break;
+            case 'image':
+                const img = new Image();
+                img.src = shape.src;
+                img.onload = () => {
+                    newShape = new Konva.Image({
+                        x: shape.x,
+                        y: shape.y,
+                        width: shape.width,
+                        height: shape.height,
+                        image: img,
+                    });
+
+                    newShape.index = shape.id;
+                    newShape.scaleX(shape.scaleX);
+                    newShape.scaleY(shape.scaleY);
+                    newShape.rotation(shape.rotation);
+                    console.log("new", newShape)
+                    this.layer.add(newShape);
+                    this.toBackend(newShape, shape.type);
+
+                }
+                return;
             default:
                 return;
         }
@@ -62,7 +85,7 @@ const DrawingFunctions = {
         newShape.scaleX(shape.scaleX);
         newShape.scaleY(shape.scaleY);
         newShape.rotation(shape.rotation);
-        console.log("new",newShape)
+        console.log("new", newShape)
         this.layer.add(newShape);
         this.toBackend(newShape, shape.type);
     },
@@ -85,6 +108,9 @@ const DrawingFunctions = {
                 break;
             case 'line':
                 await CreateLine(shape);
+                break;
+            case 'image':
+                await CreateImage(shape);
                 break;
         }
     },

@@ -86,7 +86,10 @@ public class ShapeManager {
     }
 
     public static Shape create(String shapeType, Map<String, Object> attributes) {
-        return ShapeFactory.create(shapeType, attributes);
+        Shape shape =ShapeFactory.create(shapeType, attributes);
+        System.out.println("created");
+        System.out.println(shapes);
+        return shape;
     }
 
     public static void undo() {
@@ -116,8 +119,6 @@ public class ShapeManager {
     }
 
     public void saveRecord() {
-        System.out.println("saveRecord");
-        System.out.println(history);
         nextHistory++;
         System.out.println(nextHistory);
         history.add(new HashMap<>());
@@ -125,6 +126,8 @@ public class ShapeManager {
         if (nextHistory < history.size() ) {
             history.subList(nextHistory , history.size()).clear();
         }
+        System.out.println("saveRecord");
+        System.out.println(history);
     }
 
     public void clearHistory() {

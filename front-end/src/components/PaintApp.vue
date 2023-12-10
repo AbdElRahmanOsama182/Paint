@@ -20,7 +20,7 @@
                 <button @click="cloneShape()" :style="{ backgroundColor: cloneColor }">Clone</button>
                 <button @click="resizeShape" :style="{ backgroundColor: resizeColor }">Resize</button>
                 <button @click="clearAll">Clear</button>
-                <button class="alien" @dblclick="clearAll">👽</button>
+                <button class="alien" @dblclick="clearAll" @click="addImage">👽</button>
             </div>
             <div class="shapes">
                 <button @click="drawShape('Circle')">◯</button>
@@ -66,7 +66,8 @@ import Konva from "konva";
 import { DrawingFunctions } from "../functions/Drawing.js";
 import { HistoryFunctions } from "../functions/History.js";
 import { UpdateCircle, UpdateEllipse, UpdateLine, UpdatePolygon, UpdateRectangle } from "../api/Updates.js";
-import {updateShape,createShape} from "../functions/Utils.js";
+import { CreateImage } from "../api/Creates.js";
+import { updateShape, createShape } from "../functions/Utils.js";
 
 export default {
     data() {
@@ -126,7 +127,7 @@ export default {
             console.log(e.currentTarget.nodes());
             for (let key in e.currentTarget.nodes()) {
                 let shape = e.currentTarget.nodes()[key];
-                console.log(shape,shape.className);
+                console.log(shape, shape.className);
                 switch (shape.className) {
                     case "Circle":
                         await UpdateCircle(shape);
@@ -195,7 +196,7 @@ export default {
                             },
                         ],
                     };
-                } else  {
+                } else {
                     options = {
                         types: [
                             {
@@ -210,7 +211,7 @@ export default {
                     ? fileHandle.name
                     : fileHandle.name + extension;
                 if (extension === 'png') {
-                    const dataURL = this.stage.toDataURL({ pixelRatio: 3});
+                    const dataURL = this.stage.toDataURL({ pixelRatio: 3 });
                     const blob = await (await fetch(dataURL)).blob();
                     const writable = await fileHandle.createWritable();
                     await writable.write(blob);
@@ -287,7 +288,7 @@ export default {
                     headers: {
                         'Content-Type': extension === 'json' ? 'application/json' : 'application/xml',
                     },
-                    body: contents ,
+                    body: contents,
                 });
                 if (!response.ok) {
                     console.error('Error loading file:', response);
@@ -295,14 +296,20 @@ export default {
                     return;
                 }
                 let newShapes;
-                if (extension==='json') newShapes = JSON.parse(contents);
+                if (extension === 'json') newShapes = JSON.parse(contents);
                 else newShapes = await response.json();
                 const shapesArray = Object.values(newShapes);
                 console.log(shapesArray);
                 this.clearAll();
-                shapesArray.forEach((shape) => {
-                    this.createFromJson(shape);
-                });
+                // shapesArray.forEach(async (shape) => {
+                //     await this.createFromJson(shape);
+                // });
+                for(let shape in shapesArray){
+                    console.log(shape)
+                    await this.createFromJson(shapesArray[shape]);
+                    
+
+                }
                 console.log(this.layer.children);
                 this.layer.draw();
                 this.saveRecord();
@@ -323,7 +330,7 @@ export default {
             this.resetButtons();
             this.emptyTransformer();
             while (this.layer.children.length > 2) {
-                await fetch(`http://localhost:8080/shape/${this.layer.children[this.layer.children.length-1].index}`, {
+                await fetch(`http://localhost:8080/shape/${this.layer.children[this.layer.children.length - 1].index}`, {
                     method: "DELETE",
                 });
                 this.layer.children[2].destroy();
@@ -460,11 +467,11 @@ export default {
                 this.showPicker();
             }
         },
-        resizeShape(){
+        resizeShape() {
             this.emptyTransformer();
             this.setDelete(0);
             this.setClone(0);
-            this.setResize(!this.isResizing);  
+            this.setResize(!this.isResizing);
             this.showLoadDropdown = false;
             this.showSaveDropdown = false;
         },
@@ -510,7 +517,7 @@ export default {
         },
         emptyTransformer() {
             if (this.transformer) {
-                this.transformer.nodes().forEach(shape => {shape.draggable(false);updateShape(shape)});
+                this.transformer.nodes().forEach(shape => { shape.draggable(false); updateShape(shape) });
                 this.saveRecord();
                 this.transformer.nodes([]);
             }
@@ -598,46 +605,108 @@ export default {
                 console.log("redone");
             }
         },
-        checkShape(){
-            if(this.isResizing){
+        checkShape() {
+            if (this.isResizing) {
                 const pos = this.stage.getPointerPosition();
                 const shape = this.stage.getIntersection(pos);
                 console.log(shape);
-                if(shape) {
+                if (shape) {
                     this.drawingShape = this.shapeType(shape);
                     this.clickedShapeIndex = shape.index;
                 }
             }
             this.stage.on('mousemove', this.drawing);
         },
-        setResize(value){
+        setResize(value) {
             this.isResizing = value;
             this.resizeColor = this.activeColorfn(this.isResizing);
             this.drawingShape = null;
             this.clickedShapeIndex = null;
         },
-        setDelete(value){
+        setDelete(value) {
             this.isDeletable = value;
             this.deleteColor = this.activeColorfn(this.isDeletable);
         },
-        setClone(value){
+        setClone(value) {
             this.isClonable = value;
             this.cloneColor = this.activeColorfn(this.isClonable);
         },
-        shapeType(shape){
+        shapeType(shape) {
             var name = shape.getClassName();
-            if(name == "RegularPolygon"){
+            if (name == "RegularPolygon") {
                 name = "Triangle";
             }
-            else if(name == "Rect"){
-                if(shape.getAttr('height') == shape.getAttr('width')){
+            else if (name == "Rect") {
+                if (shape.getAttr('height') == shape.getAttr('width')) {
                     name = "Square";
                 }
-                else{
+                else {
                     name = "Rectangle";
                 }
             }
             return name;
+        },
+        async addImage() {
+            try {
+                const [fileHandle] = await window.showOpenFilePicker({
+                    types: [
+                        {
+                            description: 'Images',
+                            accept: {
+                                'image/*': ['.png'],
+                            },
+                        },
+                    ],
+                });
+
+                const file = await fileHandle.getFile();
+                const imageUrl = URL.createObjectURL(file);
+                const image = new Image();
+                image.src = imageUrl;
+                image.onload = () => {
+
+
+                    // Get base64 code
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.width = image.width;
+                    canvas.height = image.height;
+
+                    context.drawImage(image, 0, 0);
+
+                    const base64String = canvas.toDataURL('image/png');
+                    console.log(base64String);
+
+                    // add image
+                    const tempImage = new Image();
+                    tempImage.src = base64String;
+                    tempImage.onload = () => {
+                        const img = new Konva.Image({
+                            x: 500,
+                            y: 200,
+                            image: tempImage,
+                            draggable: false,
+                            width: tempImage.width / 2,
+                            height: tempImage.height / 2,
+                        });
+                        this.layer.add(img);
+                        CreateImage(img);
+                        // img.index = this.layer.children.length - 1;
+                        // createShape(img);
+                        this.layer.draw();
+
+                        console.log(this.layer.children)
+
+                    }
+
+
+                    // this.saveRecord();
+                };
+                // Now you can use the imageUrl as the source for an <img> element or perform other actions.
+                console.log('Selected Image URL:', imageUrl);
+            } catch (error) {
+                console.error('Error selecting image:', error);
+            }
         },
         ...HistoryFunctions,
         ...DrawingFunctions

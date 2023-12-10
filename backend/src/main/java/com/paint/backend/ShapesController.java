@@ -27,6 +27,12 @@ public class ShapesController {
         return (Rectangle) ShapeManager.getInstance().create("rectangle", data.read());
     }
 
+    @PostMapping("/image")
+    public ImageShape createImage(@RequestBody ImageShape data) {
+        return (ImageShape) ShapeManager.getInstance().create("image", data.read());
+    }
+    
+
     @PostMapping("/triangle")
     public Triangle createTriangle(@RequestBody Triangle data) {
         return (Triangle) ShapeManager.getInstance().create("triangle", data.read());
@@ -62,6 +68,11 @@ public class ShapesController {
     @PutMapping("/rectangle/{id}")
     public Rectangle updateRectangle(@PathVariable("id") String id, @RequestBody Rectangle data) {
         return (Rectangle) ShapeManager.getInstance().update(Integer.parseInt(id), data.read());
+    }
+
+    @PutMapping("/image/{id}")
+    public ImageShape updateImage(@PathVariable("id") String id, @RequestBody ImageShape data) {
+        return (ImageShape) ShapeManager.getInstance().update(Integer.parseInt(id), data.read());
     }
 
     @PutMapping("/triangle/{id}")
