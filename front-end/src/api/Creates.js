@@ -45,6 +45,29 @@ export const CreateRectangle = async (shape, id) => {
         .then(data => { console.log("created"); return data });
 }
 
+export const CreateImage = async (shape, id) => {
+    return await fetch(`http://localhost:8080/image`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            id: id ? id : shape.index,
+
+            x: shape.x(),
+            y: shape.y(),
+            width: shape.width(),
+            height: shape.height(),
+            src: shape.image().src,
+            scaleX: shape.scaleX(),
+            scaleY: shape.scaleY(),
+            rotation: shape.rotation()
+        })
+    })
+        .then(res => res.json())
+        .then(data => { console.log("created",data); return data });
+}
+
 export const CreateEllipse = async (shape, id) => {
     return await fetch(`http://localhost:8080/ellipse`, {
         method: "POST",

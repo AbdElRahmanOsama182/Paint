@@ -61,3 +61,21 @@ export const createShape=(shape,id)=>{
             return;
     }
 }
+
+export const forceLoadImage=(image)=>{
+    return new Promise((resolve, reject) => {
+    
+        image.onload = () => {
+          // Image is loaded, resolve the promise
+          
+          resolve(image);
+        };
+    
+        image.onerror = (error) => {
+          // Image loading failed, reject the promise with an error
+          reject(error);
+        };
+    
+        // Set the src attribute to the Base64 data URL
+      });
+}
